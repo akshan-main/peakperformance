@@ -1,4 +1,4 @@
-# peakperformance
+# peak performance
 Resarch/ Analysis type project
 
 Questions of interest and goal for the project output:
