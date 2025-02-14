@@ -8,7 +8,6 @@
 *	Knows how to interpret the player statistics 
 
 
-
 ## User Story 2:
 *	Director/Manager of club
 *	Wants to analyze player’s salary
