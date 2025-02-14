@@ -1,5 +1,5 @@
 ## User Story 1: 
-*	Coach/Scout
+*	Coach
 *	Wants to analyze if the player performance
 *	Wants to search by player specific stats
 *	Needs to be able to see player performance in a given season
@@ -9,7 +9,7 @@
 
 
 ## User Story 2:
-*	Director/Manager of club
+*	Director
 *	Wants to analyze player’s salary
 *	Wants to be able to search by player
 *	Needs to be able to see whether current/future contracts are worth it
