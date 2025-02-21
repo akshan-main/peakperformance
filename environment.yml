@@ -2,7 +2,7 @@ name: myenv
 channels:
   - defaults
 dependencies:
-  - python=3.8.20=hb885b13_0
+  - python=3.11
   - python-dateutil=2.9.0post0=py38hca03da5_2
   - python-fastjsonschema=2.16.2=py38hca03da5_0
   - python-json-logger=2.0.7=py38hca03da5_0
