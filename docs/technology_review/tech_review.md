@@ -21,7 +21,7 @@ To train LSTM models for predicting player performance, we compared two widely u
 | Performance |  Optimized for production and deployment | Efficient for dynamic computations |
 | Community Support |  Large (Google-backed) | Large (Facebook-backed) |
 | Debugging | More challenging due to static computation graph |  Easier due to dynamic computation graph |
-| Deployment & Scalability | Excellent (TensorFlow Serving, TensorFlow Lite) | ⚠️ Limited built-in deployment support |
+| Deployment & Scalability | Excellent (TensorFlow Serving, TensorFlow Lite) | Limited built-in deployment support |
 
 ### **Final Choice:  TensorFlow/Keras**
   - Keras provides an easy-to-use interface for building **LSTM models**.
@@ -29,9 +29,6 @@ To train LSTM models for predicting player performance, we compared two widely u
   - It has extensive documentation and a strong developer community.
   - **TensorFlow Serving & TensorFlow Lite** make it easier to deploy at scale.
 
-**Potential Drawbacks:**
-- Debugging can be more complex compared to PyTorch.
-- Can be more memory-intensive in certain cases.
 
 ---
 
@@ -50,9 +47,7 @@ Since we need to determine which performance metrics matter most for peak perfor
 - It supports **PCA-based feature selection**, which helps in dimensionality reduction.
 - The library is well-documented and integrates easily with our other tools.
 
-**Potential Drawbacks:**
-- Lacks advanced feature explainability (unlike SHAP).
-- Less specialized for tree-based models compared to XGBoost.
+
 
 ---
 
@@ -76,10 +71,6 @@ We compared different options for **visualizing and deploying our results**:
 - **Minimal coding effort for deployment**, unlike Dash (which needs callbacks) or Flask (which requires frontend development).  
 - **Optimized for data science & ML models**, making visualization easy.
 
-
-**Potential Drawbacks:**  
-- **Limited customization** compared to Dash.  
-- **Not suitable for highly complex multi-page applications** like a full web app in Flask.
 
 ---
 
