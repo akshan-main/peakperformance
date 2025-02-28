@@ -8,7 +8,7 @@ def load_data():
 
 df = load_data()
 
-# Page title
+#Title
 st.markdown("<h1 style='text-align: center;'>Peak Performance</h1>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center;'>Search Player below</h4>", unsafe_allow_html=True)
 
