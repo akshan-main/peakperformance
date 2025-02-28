@@ -95,6 +95,15 @@ jobs:
       # Next step: run pylint. Anything less than 10/10 will fail.
       #            Once we've covered pylint in lecture, uncomment
       #            the following lines.
+      - name: Install additional development dependencies
+        run: |
+          conda install --yes coverage pylint
+          conda activate myenv
+
+      - name: Verify Pylint Installation
+        run: |
+          which pylint
+          
       - name: Lint with pylint
         run: |
           pylint tests/**/*.py
