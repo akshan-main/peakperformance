@@ -109,19 +109,19 @@ jobs:
       #     pylint peakperfomance/**/*.py
 
       # Lastly: report code coverage to Coveralls.
-      - name: Report code coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: tests
-          path-to-lcov: tests/coverage.lcov
-          # The following two options are needed for "parallel"
-          # runs - ie if you have a matrix of python versions.
-          # This holds off on reporting code coverage to
-          # coveralls until all runs are done. If you don't have
-          # a matrix, this isn't needed.
-          flag-name: run-${{ join(matrix.*, ' - ') }}
-          parallel: true
+      # - name: Report code coverage to Coveralls
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     base-path: tests
+      #     path-to-lcov: tests/coverage.lcov
+      #     # The following two options are needed for "parallel"
+      #     # runs - ie if you have a matrix of python versions.
+      #     # This holds off on reporting code coverage to
+      #     # coveralls until all runs are done. If you don't have
+      #     # a matrix, this isn't needed.
+      #     flag-name: run-${{ join(matrix.*, ' - ') }}
+      #     parallel: true
 
   # After all the parallel matrix runs for build_test are done
   # for the various python versions, we run this job to send the
