@@ -106,7 +106,7 @@ jobs:
           
       - name: Lint with pylint
         run: |
-          pylint peakperfomance/**/*.py
+          pylint peakperformance/**/*.py
 
       # Lastly: report code coverage to Coveralls.
       - name: Report code coverage to Coveralls
