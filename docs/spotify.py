@@ -103,15 +103,15 @@ row1_col1, row1_col2 = st.columns([1, 1])
 row2_col1, row2_col2 = st.columns([1, 1])
 
 with row1_col1:
-    fifa_button('kickoff.png', 'large')
+    fifa_button('kickoff.jpeg', 'large')
 
 with row1_col2:
-    fifa_button('luka.png', 'large')
+    fifa_button('luka.jpeg', 'large')
 
 with row2_col1:
-    fifa_button('playerstats.png', 'small')
+    fifa_button('playerstats.jpeg', 'small')
 
 with row2_col2:
-    fifa_button('nowavailable.png', 'small', 'pages/Spotify.py')
+    fifa_button('nowavailable.jpeg', 'small', 'pages/Spotify.py')
 
 
