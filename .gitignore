@@ -1,0 +1,7 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Python build files
+dist/
+*.egg-info/
+

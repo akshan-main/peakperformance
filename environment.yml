@@ -1,10 +1,13 @@
 name: myenv
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - python=3.11
   - pytest
   - numpy
+  - pip
   - pip:
       - flask
       - streamlit
+      - -r requirements.txt
