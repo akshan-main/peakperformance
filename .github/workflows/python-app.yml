@@ -52,11 +52,7 @@ jobs:
         run: |
           ls -lah
           cat coverage.lcov | head -n 20
-
-      - name: Lint with pylint
-        run: |
-          pylint peakperformance/**/*.py
-
+        
       - name: Report code coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
@@ -64,6 +60,10 @@ jobs:
           path-to-lcov: coverage.lcov 
           flag-name: run-${{ join(matrix.*, ' - ') }}
           parallel: true
+          
+      - name: Lint with pylint
+        run: |
+          pylint peakperformance/**/*.py
 
   finish:
     needs: build_test
