@@ -5,12 +5,8 @@ from unittest.mock import patch, MagicMock
 import streamlit as st
 import pandas as pd
 import numpy as np
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from peakperformance.pages import chatbot
-from chatbot import (
+from peakperformance.pages.chatbot import (
     load_data,
     get_base64,
     load_background_image,
@@ -45,8 +41,10 @@ class TestChatbot(unittest.TestCase):
         bg_img = load_background_image()
         self.assertEqual(bg_img, 'fake_base64')
 
+    @patch('peakperformance.pages.chatbot.st.markdown')
+    @patch('peakperformance.pages.chatbot.st.cache_data', lambda x: x)
     @patch('pandas.read_csv')
-    def test_load_data(self, mock_read_csv):
+    def test_load_data(self, mock_read_csv, mock_markdown):
         mock_df = pd.DataFrame({
             "PLAYER": ["Lionel Messi", "Cristiano Ronaldo"],
             "Season": [2017, 2023],

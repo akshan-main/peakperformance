@@ -1,5 +1,6 @@
 # Ignore macOS system files
 .DS_Store
+ycache/
 
 # Ignore Python build files
 dist/

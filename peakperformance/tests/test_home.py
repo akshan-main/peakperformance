@@ -22,7 +22,7 @@ class TestHome(unittest.TestCase):
 
     @patch("os.path.exists", return_value=True)
     @patch("builtins.open", new_callable=mock_open, read_data=b'test data')
-    @patch("home.get_base64")
+    @patch("peakperformance.home.get_base64")
     @patch("streamlit.markdown")
     def test_set_background(self, mock_markdown, mock_get_base64, mock_file, mock_exists):
         """Test if set_background correctly injects base64-encoded image."""
@@ -70,7 +70,7 @@ class TestHome(unittest.TestCase):
 
     @patch("os.path.exists", return_value=True)
     @patch("builtins.open", new_callable=mock_open, read_data=b'test data')
-    @patch("home.display_image_button")
+    @patch("peakperformance.home.display_image_button")
     @patch("streamlit.button", return_value=True)
     @patch("streamlit.switch_page")
     @patch("streamlit.markdown")  # Mocking markdown to prevent Streamlit errors
