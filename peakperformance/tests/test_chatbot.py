@@ -36,9 +36,12 @@ class TestChatbot(unittest.TestCase):
         expected = base64.b64encode(b'testdata').decode()
         self.assertEqual(result, expected)
 
+    @patch('peakperformance.pages.chatbot.get_abs_path', return_value='dummy/path/background.jpeg')
     @patch('peakperformance.pages.chatbot.get_base64', return_value='fake_base64')
-    def test_load_background_image(self, mock_get_base64):
+    def test_load_background_image(self, mock_get_base64, mock_get_abs_path):
         bg_img = load_background_image()
+        mock_get_abs_path.assert_called_once_with('background.jpeg')
+        mock_get_base64.assert_called_once_with('dummy/path/background.jpeg')
         self.assertEqual(bg_img, 'fake_base64')
 
     @patch('peakperformance.pages.chatbot.st.markdown')
@@ -321,6 +324,14 @@ class TestChatbot(unittest.TestCase):
         """Test sidebar metric selection behavior."""
         metrics_list = ["age", "nation"] if not mock_checkbox.return_value else ["all"]
         self.assertEqual(metrics_list, ["age", "nation"])
+
+    @patch('peakperformance.pages.chatbot.get_abs_path', return_value=None)
+    @patch('peakperformance.pages.chatbot.get_base64')
+    def test_load_background_image_not_found(self, mock_get_base64, mock_get_abs_path):
+        bg_img = load_background_image()
+        mock_get_abs_path.assert_called_once_with('background.jpeg')
+        mock_get_base64.assert_not_called()
+        self.assertIsNone(bg_img)
 
 if __name__ == '__main__':
     unittest.main()
