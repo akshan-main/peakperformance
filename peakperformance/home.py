@@ -12,7 +12,6 @@ def get_base64(bin_file):
 def get_abs_path(relative_path):
     """Correctly resolves asset paths locally and on deployment."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Streamlit Cloud sets working dir to repo root, check both locations
     possible_paths = [
         os.path.join(current_dir, '..', 'assets', relative_path),
         os.path.join(current_dir, 'assets', relative_path),
@@ -25,12 +24,15 @@ def get_abs_path(relative_path):
         if os.path.exists(abs_path):
             return abs_path
 
-    # Clearly log an error if file not found after checking all paths
     st.error(f"Could not find asset: {relative_path} in any known path.")
     return None
 
 def set_background(image_path):
     if image_path is None:
+        return
+
+    if not os.path.exists(image_path):
+        st.error(f"Background image not found: {image_path}")
         return
 
     img_b64 = get_base64(image_path)
@@ -92,7 +94,6 @@ def inject_custom_styles():
         unsafe_allow_html=True,
     )
 
-
 def display_image_button(image_file, size):
     button_class = 'large-button' if size == 'large' else 'small-button'
     image_path = get_abs_path(image_file)
@@ -113,8 +114,6 @@ def display_image_button(image_file, size):
             unsafe_allow_html=True,
         )
 
-
-
 def fifa_button(image_file, size, target_page=None):
     display_image_button(image_file, size)
     if st.button(label="", key=image_file):
@@ -130,16 +129,16 @@ def main():
     row2_col1, row2_col2 = st.columns([1, 1])
 
     with row1_col1:
-        fifa_button('kickoff.png', 'large', 'pages/1_salary.py')
+        fifa_button('kickoff.png', 'large', 'pages/salary.py')
 
     with row1_col2:
-        fifa_button('stats.jpeg', 'large', 'pages/2_plot.py')
+        fifa_button('stats.jpeg', 'large', 'pages/plot.py')
 
     with row2_col1:
-        fifa_button('similarity.jpeg', 'small', 'pages/3_chatbot.py')
+        fifa_button('similarity.jpeg', 'small', 'pages/chatbot.py')
 
     with row2_col2:
-        fifa_button('career.jpg', 'small', 'pages/4_RLmodel.py')
+        fifa_button('career.jpg', 'small', 'pages/RLmodel.py')
 
 
 if __name__ == "__main__":

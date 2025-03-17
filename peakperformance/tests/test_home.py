@@ -41,10 +41,12 @@ class TestHome(unittest.TestCase):
         args, _ = mock_markdown.call_args
         self.assertIn(".image-button:hover", args[0])
 
-    def test_get_abs_path(self):
+    @patch("os.path.exists", side_effect=lambda path: 'assets/test_image.jpg' in path)
+    def test_get_abs_path(self, mock_exists):
         """Test absolute path generation."""
         relative_path = "test_image.jpg"
         abs_path = home.get_abs_path(relative_path)
+
         expected_path = os.path.abspath(os.path.join(os.path.dirname(home.__file__), "..", "assets", relative_path))
         self.assertEqual(abs_path, expected_path)
 
@@ -66,7 +68,7 @@ class TestHome(unittest.TestCase):
         home.display_image_button("missing.png", "large")
         mock_error.assert_called_once()
         args, _ = mock_error.call_args
-        self.assertIn("Image not found", args[0])
+        self.assertIn("Could not find asset: missing.png in any known path.", args[0])
 
     @patch("os.path.exists", return_value=True)
     @patch("builtins.open", new_callable=mock_open, read_data=b'test data')
@@ -90,7 +92,7 @@ class TestHome(unittest.TestCase):
 
         mock_error.assert_called_once()
         args, _ = mock_error.call_args
-        self.assertIn("Image not found", args[0])
+        self.assertIn("Could not find asset: missing.png in any known path.", args[0])
 
     @patch("peakperformance.home.set_background")
     @patch("peakperformance.home.inject_custom_styles")
@@ -102,15 +104,20 @@ class TestHome(unittest.TestCase):
         mock_styles.assert_called_once()
         self.assertEqual(mock_fifa_button.call_count, 4)
 
-
-    @patch("os.path.exists", return_value=False)
+    @patch("peakperformance.home.os.path.exists", return_value=False)
+    @patch("peakperformance.home.get_base64")
+    @patch("streamlit.markdown")
     @patch("streamlit.error")
-    def test_set_background_file_missing(self, mock_error, mock_exists):
+    def test_set_background_file_missing(
+        self, mock_error, mock_markdown, mock_get_base64, mock_exists
+    ):
         """Test set_background when file is missing."""
         home.set_background("nonexistent.jpeg")
-        mock_error.assert_called_once()
 
-
+        mock_exists.assert_called_once_with("nonexistent.jpeg")
+        mock_get_base64.assert_not_called()
+        mock_markdown.assert_not_called()
+        mock_error.assert_called_once_with("Background image not found: nonexistent.jpeg")
 
 if __name__ == "__main__":
     unittest.main()

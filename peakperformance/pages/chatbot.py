@@ -178,16 +178,43 @@ def get_base64(bin_file):
     except FileNotFoundError:
         return None  # Return None instead of crashing in tests
 
-def load_background_image():
-    """Loads the background image and returns its base64 encoding.
+def get_abs_path(relative_path):
+    """
+    Resolves the absolute path for a given relative path robustly by 
+    traversing parent directories until finding the 'assets' directory.
+
+    Args:
+        relative_path (str): The relative path to the asset file.
 
     Returns:
-        str | None: Base64-encoded string of the image, or None if the file is missing.
+        str | None: The absolute path to the asset if found, otherwise None.
     """
-    bg_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "assets", "background.jpeg")
-    )
-    return get_base64(bg_path)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Move upwards from current_dir until reaching root directory
+    while True:
+        potential_path = os.path.join(current_dir, 'assets', relative_path)
+        if os.path.exists(potential_path):
+            return potential_path
+
+        # If current_dir is root or no further parent directory, stop searching
+        parent_dir = os.path.dirname(current_dir)
+        if current_dir == parent_dir:
+            break  # Reached root directory without finding asset
+        current_dir = parent_dir
+
+    st.error(f"Could not find asset: {relative_path} in any known path.")
+    return None
+
+def load_background_image():
+    """
+    Loads the background image ('background.jpeg') and returns its base64-encoded string.
+
+    Returns:
+        str | None: Base64-encoded string of the background image, or None if not found.
+    """
+    bg_path = get_abs_path('background.jpeg')
+    return get_base64(bg_path) if bg_path else None
 
 bg_img = load_background_image()
 
