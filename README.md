@@ -1,4 +1,4 @@
-# peak performance [![Coverage Status](https://coveralls.io/repos/github/akshan-main/peakperformance/badge.svg)](https://coveralls.io/github/akshan-main/peakperformance)
+# peak performance [![Coverage Status](https://coveralls.io/repos/github/akshan-main/peakperformance/badge.svg?branch=main)](https://coveralls.io/github/akshan-main/peakperformance?branch=main)
 
 Resarch/ Analysis type project
 
