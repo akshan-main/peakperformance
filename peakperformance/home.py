@@ -10,15 +10,19 @@ def get_base64(bin_file):
         return base64.b64encode(file.read()).decode()
 
 def get_abs_path(relative_path):
-    """Ensure the correct path to assets in both local and deployed environments."""
+    """Ensure the correct asset path both locally and after deployment."""
     
-    # Check if the relative path works locally
-    if os.path.exists(relative_path):
-        return relative_path  
+    # Get the absolute path of the current script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # If running inside Streamlit deployment, adjust path
-    base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script directory
-    return os.path.join(base_dir, "..", "assets", relative_path)
+    # Move up one directory (to the main peakperformance folder) and access assets/
+    assets_dir = os.path.abspath(os.path.join(base_dir, "..", "assets"))
+
+    # Construct the full path to the image
+    image_path = os.path.join(assets_dir, relative_path)
+
+    return image_path
+
 
 
 def set_background(image_path):
