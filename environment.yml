@@ -8,6 +8,4 @@ dependencies:
   - numpy
   - pip
   - pip:
-      - flask
-      - streamlit
       - -r requirements.txt
