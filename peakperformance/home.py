@@ -10,41 +10,44 @@ def get_base64(bin_file):
         return base64.b64encode(file.read()).decode()
 
 def get_abs_path(relative_path):
-    """Ensure the correct asset path both locally and after deployment."""
-    
-    # Get the absolute path of the current script
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    """Correctly resolves asset paths locally and on deployment."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Streamlit Cloud sets working dir to repo root, check both locations
+    possible_paths = [
+        os.path.join(current_dir, '..', 'assets', relative_path),
+        os.path.join(current_dir, 'assets', relative_path),
+        os.path.join(current_dir, relative_path),
+        os.path.join('assets', relative_path)
+    ]
 
-    # Move up one directory (to the main peakperformance folder) and access assets/
-    assets_dir = os.path.abspath(os.path.join(base_dir, "..", "assets"))
+    for path in possible_paths:
+        abs_path = os.path.abspath(path)
+        if os.path.exists(abs_path):
+            return abs_path
 
-    # Construct the full path to the image
-    image_path = os.path.join(assets_dir, relative_path)
-
-    return image_path
-
-
+    # Clearly log an error if file not found after checking all paths
+    st.error(f"Could not find asset: {relative_path} in any known path.")
+    return None
 
 def set_background(image_path):
-    if not os.path.exists(image_path):
-        st.error(f"Background image not found: {image_path}")
+    if image_path is None:
         return
 
     img_b64 = get_base64(image_path)
-    st.markdown(
-        f"""
-        <style>
-            .stApp {{
-                background-image: url("data:image/jpeg;base64,{img_b64}");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-            }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    if img_b64:
+        st.markdown(
+            f"""
+            <style>
+                .stApp {{
+                    background-image: url("data:image/jpeg;base64,{img_b64}");
+                    background-size: cover;
+                    background-position: center;
+                    background-attachment: fixed;
+                }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
 def inject_custom_styles():
     st.markdown(
@@ -94,23 +97,22 @@ def display_image_button(image_file, size):
     button_class = 'large-button' if size == 'large' else 'small-button'
     image_path = get_abs_path(image_file)
 
-    if not os.path.exists(image_path):
-        st.error(f"Image not found: {image_path}")
+    if image_path is None:
         return
 
-    with open(image_path, "rb") as img_file:
-        img_b64 = base64.b64encode(img_file.read()).decode()
+    img_b64 = get_base64(image_path)
+    if img_b64:
+        st.markdown(
+            f"""
+            <div class="image-button {button_class}">
+                <img class="image-content" 
+                     src="data:image/png;base64,{img_b64}" 
+                     alt="{image_file}">
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    st.markdown(
-        f"""
-        <div class="image-button {button_class}">
-            <img class="image-content" 
-                 src="data:image/png;base64,{img_b64}" 
-                 alt="{image_file}">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 def fifa_button(image_file, size, target_page=None):
