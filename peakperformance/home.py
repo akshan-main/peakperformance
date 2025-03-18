@@ -1,3 +1,23 @@
+"""
+FIFA 15 Style Homepage for the PeakPerformance Application.
+
+This Streamlit-based homepage provides an interactive UI where users can:
+- Set a FIFA-style background
+- Inject custom UI styles for buttons and images
+- Display and interact with image buttons that navigate to different app pages
+
+Functions:
+- `get_base64(bin_file)`: Encodes a file in Base64 format.
+- `get_abs_path(relative_path)`: Resolves the absolute path of assets.
+- `set_background(image_path)`: Sets the background image using Base64 encoding.
+- `inject_custom_styles()`: Injects custom CSS styles into the Streamlit app.
+- `display_image_button(image_file, size)`: Displays an image-based button.
+- `fifa_button(image_file, size, target_page)`: Creates a clickable image button.
+- `main()`: Initializes and renders the homepage layout.
+
+Author: Joshua Son
+Date: March 17, 2025
+"""
 import os
 import base64
 import streamlit as st
@@ -6,6 +26,15 @@ st.set_page_config(page_title="FIFA 15 Style Homepage", layout="wide")
 
 
 def get_base64(bin_file):
+    """
+    Encode a binary file into Base64 format.
+
+    Args:
+        bin_file (str): Path to the file.
+
+    Returns:
+        str: Base64-encoded string of the file content.
+    """
     with open(bin_file, "rb") as file:
         return base64.b64encode(file.read()).decode()
 
@@ -28,6 +57,14 @@ def get_abs_path(relative_path):
     return None
 
 def set_background(image_path):
+    """
+    Set the background image for the Streamlit app.
+
+    If the specified image is not found, displays an error message.
+
+    Args:
+        image_path (str): Absolute path to the background image.
+    """
     if image_path is None:
         return
 
@@ -52,6 +89,13 @@ def set_background(image_path):
         )
 
 def inject_custom_styles():
+    """
+    Inject custom CSS styles into the Streamlit app.
+
+    Styles include:
+    - Transparent buttons with hover effects
+    - FIFA-style image buttons with animations
+    """
     st.markdown(
         """
         <style>
@@ -95,6 +139,13 @@ def inject_custom_styles():
     )
 
 def display_image_button(image_file, size):
+    """
+    Display an image button.
+
+    Args:
+        image_file (str): Path to the image file.
+        size (str): Button size, either 'large' or 'small'.
+    """
     button_class = 'large-button' if size == 'large' else 'small-button'
     image_path = get_abs_path(image_file)
 
@@ -115,6 +166,16 @@ def display_image_button(image_file, size):
         )
 
 def fifa_button(image_file, size, target_page=None):
+    """
+    Create a clickable image button.
+
+    When clicked, it navigates to a different page (if specified).
+
+    Args:
+        image_file (str): Path to the button image.
+        size (str): Button size, either 'large' or 'small'.
+        target_page (str, optional): Path to the target Streamlit page.
+    """
     display_image_button(image_file, size)
     if st.button(label="", key=image_file):
         if target_page:
@@ -122,6 +183,13 @@ def fifa_button(image_file, size, target_page=None):
 
 
 def main():
+    """
+    Main function to initialize and render the FIFA-style homepage.
+
+    - Sets the background image
+    - Injects custom styles
+    - Displays interactive FIFA-style buttons for navigation
+    """
     set_background(get_abs_path('background.jpeg'))
     inject_custom_styles()
 
@@ -132,7 +200,7 @@ def main():
         fifa_button('kickoff.png', 'large', 'pages/salary.py')
 
     with row1_col2:
-        fifa_button('stats.jpeg', 'large', 'pages/plot.py')
+        fifa_button('stats.jpeg', 'large', 'pages/player_plot.py')
 
     with row2_col1:
         fifa_button('similarity.jpeg', 'small', 'pages/chatbot.py')
