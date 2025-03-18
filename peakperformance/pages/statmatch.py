@@ -1,7 +1,7 @@
 # pylint: disable=C0103  # Not a constant, dynamically generated HTML
 
 """
-chatbot.py
+statmatch.py
 
 This module implements a chatbot for finding similar players based on 
 historical performance metrics. It uses cosine similarity on standardized 
@@ -290,7 +290,14 @@ def load_data():
 df, df_norm, metrics_cols = load_data()
 
 def extract_years_and_results(user_input):
-    """Extracts years and number of results from the user query."""
+    """Extracts years and number of results from the user query.
+    
+    Args:
+        user_input (str): The user's query input.
+
+    Returns:
+        Str : Parsed user query.
+    """
     parsed = {"reference_season": None, "target_season": None, "num_results": 10}
 
     years = re.findall(r"\b20\d{2}\b", user_input)
@@ -340,7 +347,24 @@ def clean_reference_player(name):
     return None if name in invalid_names else name.title()
 
 def parse_user_query(user_input, data, demonym_mapping):
-    """Parses the user query into structured information."""
+    """Parses the user input query into structured information for player similarity comparison.
+
+    Args:
+        user_input (str): The user's input query containing search parameters.
+        data (pd.DataFrame): Dataset containing player information for validation.
+        demonym_mapping (dict): Mapping of nationality adjectives to country names.
+
+    Returns:
+        dict: {
+            "reference_player" (str | None): Extracted player name.
+            "reference_season" (int | None): Season for the reference player.
+            "target_season" (int | None): Season for finding similar players.
+            "num_results" (int): Number of similar players requested.
+            "league" (str | None): Extracted league name.
+            "nationality" (str | None): Extracted nationality of the player.
+            "age_filter" (tuple | None): Tuple with age condition and value.
+        }
+    """
     init_session_messages(st.session_state)
 
     user_html = create_user_html(user_input, datetime.now().strftime("%H:%M"))
@@ -349,6 +373,21 @@ def parse_user_query(user_input, data, demonym_mapping):
 
     parsed = extract_years_and_results(user_input)
     parsed["reference_player"] = extract_reference_player(user_input)
+
+    if not parsed["reference_player"] and not parsed["reference_season"]:
+        error_msg = "Sorry, I didn't understand that. Try asking for similar players!"
+        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+        st.markdown(error_msg, unsafe_allow_html=True)
+
+        return {
+            "reference_player": None,
+            "reference_season": None,
+            "target_season": None,
+            "num_results": 10,
+            "league": None,
+            "nationality": None,
+            "age_filter": None
+        }
 
     leagues = ["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1", "PL"]
     parsed["league"] = next(
@@ -400,6 +439,7 @@ def parse_user_query(user_input, data, demonym_mapping):
 
     return parsed
 
+
 def filter_candidates(player_data, normalized_data, user_query, metrics_list):
     """
     Filters potential candidate players based on similarity criteria.
@@ -420,11 +460,14 @@ def filter_candidates(player_data, normalized_data, user_query, metrics_list):
     nationality = user_query.get("nationality")
     age_filter = user_query.get("age_filter")
 
+    if not ref_name:
+        return None, None, None, "Player not found. Please provide a valid player name."
+
     mask = (
         (player_data["Season"] == ref_year)
         & (
-            player_data["PLAYER"].str.lower().eq(ref_name.lower())
-            | player_data["PLAYER"].str.lower().str.contains(ref_name.lower())
+            player_data["PLAYER"].astype(str).str.lower().eq(ref_name.lower())
+            | player_data["PLAYER"].astype(str).str.lower().str.contains(ref_name.lower(), na=False)
         )
     )
 
@@ -467,6 +510,7 @@ def filter_candidates(player_data, normalized_data, user_query, metrics_list):
 
     return player_data[candidate_mask], normalized_data[candidate_mask], reference_vector, None
 
+
 def compute_similarity(
         reference_vector, candidate_data, normalized_candidates,
         metrics_list, num_results
@@ -496,7 +540,6 @@ def compute_similarity(
         if candidate_norms[i] != 0:
             similarity_scores[i] = dot_products[i] / (reference_norm * candidate_norms[i])
 
-    # Select top N similar players
     top_n = min(num_results, len(similarity_scores))
     top_indices = np.argsort(similarity_scores)[::-1][:top_n]
     similar_players = candidate_data.iloc[top_indices].copy()
