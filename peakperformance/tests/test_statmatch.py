@@ -11,7 +11,7 @@ This module contains tests for:
 
 These tests use unittest and unittest.mock to simulate external dependencies.
 
-Author: Joshua Son
+Author: Akshan Krithick
 Date: March 16, 2025
 """
 
@@ -22,7 +22,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-from peakperformance.pages.chatbot import (
+from peakperformance.pages.statmatch import (
     load_data,
     get_base64,
     load_background_image,
@@ -38,7 +38,7 @@ from peakperformance.pages.chatbot import (
 
 class TestChatbotFirst(unittest.TestCase):
     """
-    Unit tests for chatbot-related functions in the peakperformance application. 
+    Unit tests for statmatch-related functions in the peakperformance application. 
     This is the first half of testing for the chatbot functionality.
     """
 
@@ -59,8 +59,11 @@ class TestChatbotFirst(unittest.TestCase):
         expected = base64.b64encode(b'testdata').decode()
         self.assertEqual(result, expected)
 
-    @patch('peakperformance.pages.chatbot.get_abs_path', return_value='dummy/path/background.jpeg')
-    @patch('peakperformance.pages.chatbot.get_base64', return_value='fake_base64')
+    @patch(
+        "peakperformance.pages.statmatch.get_abs_path",
+        return_value="dummy/path/background.jpeg"
+    )
+    @patch('peakperformance.pages.statmatch.get_base64', return_value='fake_base64')
     def test_load_background_image(self, mock_get_base64, mock_get_abs_path):
         """Test loading a background image and converting it to base64."""
         bg_img = load_background_image()
@@ -68,8 +71,8 @@ class TestChatbotFirst(unittest.TestCase):
         mock_get_base64.assert_called_once_with('dummy/path/background.jpeg')
         self.assertEqual(bg_img, 'fake_base64')
 
-    @patch('peakperformance.pages.chatbot.st.markdown')
-    @patch('peakperformance.pages.chatbot.st.cache_data', lambda x: x)
+    @patch('peakperformance.pages.statmatch.st.markdown')
+    @patch('peakperformance.pages.statmatch.st.cache_data', lambda x: x)
     @patch('pandas.read_csv')
     def test_load_data(self, _, __):
         """Test loading player data from a CSV file."""
@@ -187,8 +190,8 @@ class TestChatbotFirst(unittest.TestCase):
         self.assertFalse(top_players.empty)
         self.assertEqual(len(top_players), 2)
         self.assertIn("Similarity", top_players.columns)
-    @patch("peakperformance.pages.chatbot.st.markdown")
-    @patch("peakperformance.pages.chatbot.st.session_state", new_callable=MagicMock)
+    @patch("peakperformance.pages.statmatch.st.markdown")
+    @patch("peakperformance.pages.statmatch.st.session_state", new_callable=MagicMock)
     def test_parse_user_query_session_state(self, mock_session_state, _):
         """Test if session state correctly initializes messages.
 
@@ -222,7 +225,7 @@ class TestChatbotFirst(unittest.TestCase):
         self.assertTrue(top_players.empty)
 
 class TestChatbotSecond(unittest.TestCase):
-    "This is the first half of testing for the chatbot functionality."
+    "This is the second half of testing for the chatbot functionality."
     def setUp(self):
         """Initialize Streamlit session state before each test."""
         st.session_state = MagicMock()
@@ -263,7 +266,7 @@ class TestChatbotSecond(unittest.TestCase):
     def test_filter_candidates_no_metrics(self):
         """Test filtering when reference player has no metric values."""
         df_mock = pd.DataFrame({"PLAYER": ["Messi"], "Season": [2017], "age": [30]})
-        df_norm_mock = pd.DataFrame({"age": [np.nan]})  # No valid values
+        df_norm_mock = pd.DataFrame({"age": [np.nan]})
         parsed = {
             "reference_player": "Messi",
             "reference_season": 2017,
@@ -326,6 +329,7 @@ class TestChatbotSecond(unittest.TestCase):
         self.assertEqual(parsed["reference_player"], "Neymar")
         self.assertIsNone(parsed["reference_season"])
         self.assertEqual(parsed["num_results"], 5)
+
     def test_parse_user_query_missing_info(self):
         """Test when query is too vague and missing necessary details."""
         query = "show me top players"
@@ -333,8 +337,9 @@ class TestChatbotSecond(unittest.TestCase):
 
         parsed = parse_user_query(query, df_mock, demonym_map)
 
+        self.assertIsInstance(parsed, dict, "Expected parse_user_query to return a dictionary")
         self.assertIsNone(parsed["reference_player"])
-        self.assertIsNone(parsed["league"])
+        self.assertIsNone(parsed["reference_season"])
 
     def test_filter_candidates_player_no_season_match(self):
         """Test when player exists but in a different season."""
@@ -435,8 +440,8 @@ class TestChatbotSecond(unittest.TestCase):
             )
             self.assertListEqual(sorted(candidates_df["PLAYER"].tolist()), sorted(expected_players))
 
-    @patch("peakperformance.pages.chatbot.st.sidebar.checkbox", return_value=False)
-    @patch("peakperformance.pages.chatbot.st.sidebar.multiselect", return_value=["age", "nation"])
+    @patch("peakperformance.pages.statmatch.st.sidebar.checkbox", return_value=False)
+    @patch("peakperformance.pages.statmatch.st.sidebar.multiselect", return_value=["age", "nation"])
     def test_sidebar_metric_selection(self, _, mock_checkbox):
         """Test sidebar metric selection behavior.
 
@@ -451,8 +456,8 @@ class TestChatbotSecond(unittest.TestCase):
         metrics_list = ["age", "nation"] if not mock_checkbox.return_value else ["all"]
         self.assertEqual(metrics_list, ["age", "nation"])
 
-    @patch('peakperformance.pages.chatbot.get_abs_path', return_value=None)
-    @patch('peakperformance.pages.chatbot.get_base64')
+    @patch('peakperformance.pages.statmatch.get_abs_path', return_value=None)
+    @patch('peakperformance.pages.statmatch.get_base64')
     def test_load_background_image_not_found(self, mock_get_base64, mock_get_abs_path):
         """Test handling of missing background images.
 

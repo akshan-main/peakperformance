@@ -1,5 +1,5 @@
 """
-Player Performance Visualization Dashboard
+Player Performance Metrics Radar Chart Visualization
 
 This Streamlit application loads player ratings and salary data from a CSV file, 
 allowing users to interactively select players, seasons, and performance metrics 
@@ -20,116 +20,114 @@ Modules:
 Author: Joshua Son
 Date: March 16, 2025
 """
+
 import os
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+
 def load_data(filepath=None):
     """
     Load player ratings data from a CSV file.
 
-    - If `filepath` is provided, it loads from that path.
-    - If `filepath` is None, it automatically finds the dataset inside the `dataset` folder.
+    Args:
+        filepath (str, optional): Path to the CSV file. If None, loads from default location.
 
     Returns:
-        df (DataFrame): Processed DataFrame with cleaned column names.
-        metrics (list): List of available performance metrics.
+        tuple: (pd.DataFrame, list) Processed DataFrame and available performance metrics.
     """
-
-    # If no filepath is provided, construct the absolute path dynamically
     if filepath is None:
-        # Find the root project directory (assumes `pages/` is inside `peakperformance/`)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        print(project_root)
-        filepath = os.path.join(
-            project_root,
-            "..",
-            "dataset",
-            "Ratings Combined",
-            "playerratingssalaries_100mins.csv"
+        dataset_path = os.path.join(
+            project_root, "..", "dataset", "Ratings Combined", "playerratingssalaries_100mins.csv"
         )
-    df_player = pd.read_csv(filepath)
-    exclude_cols = [
-        'rk', 'PLAYER', 'nation', 'pos', 'CLUB', 'League', 'age', 'born', 'Season',
-        'GROSS P/W (EUR)', 'GROSS P/Y (EUR)', 'GROSS P/Y (EURTAX)'
-    ]
-    player_metrics = [col for col in df_player.columns if col not in exclude_cols]
-    rename_map = {
-        col: col.replace('%', 'Percent').replace('p 90', ' per 90')
-        for col in player_metrics
+    else:
+        dataset_path = filepath
+
+    player_df = pd.read_csv(dataset_path)
+
+    exclude_cols = {
+        "rk", "PLAYER", "nation", "pos", "CLUB", "League", "age", "born", "Season",
+        "GROSS P/W (EUR)", "GROSS P/Y (EUR)", "GROSS P/Y (EURTAX)"
     }
+    metrics = [col for col in player_df.columns if col not in exclude_cols]
 
-    df_player.rename(columns=rename_map, inplace=True)
-    player_metrics = [rename_map[col] for col in player_metrics]
-    for metric in player_metrics:
-        df_player[metric] = pd.to_numeric(df_player[metric], errors='coerce')
+    rename_map = {col: col.replace("%", "Percent").replace("p 90", " per 90") for col in metrics}
+    player_df.rename(columns=rename_map, inplace=True)
 
-    return df_player, player_metrics
+    metrics = [rename_map[col] for col in metrics]
+    player_df[metrics] = player_df[metrics].apply(pd.to_numeric, errors="coerce")
+
+    return player_df, metrics
 
 
-# Only execute Streamlit when the script runs directly
-df, metrics = load_data()
+def compute_scaled_values(data_df, metrics_list, player_series):
+    """
+    Compute scaled values for radar chart.
 
-st.sidebar.title("Filters")
+    Args:
+        data_df (pd.DataFrame): Full dataset.
+        metrics_list (list): Selected performance metrics.
+        player_series (pd.Series): Row corresponding to a selected player.
 
-num_players = st.sidebar.slider("Number of Player Selections", 1, 10, 2)
+    Returns:
+        dict: Contains scaled values and hover text.
+    """
+    max_values = data_df[metrics_list].max().replace(0, 1e-5)
+    raw_values = player_series[metrics_list].astype(float)
+    scaled_values = (raw_values / max_values) * 100
 
-selected_data = []
-for i in range(num_players):
-    player = st.sidebar.selectbox(
-        f"Select Player {i+1}",
-        df['PLAYER'].unique(),
-        key=f"player_{i}"
-    )
-    seasons = df[df['PLAYER'] == player]['Season'].unique()
-    season = st.sidebar.selectbox(f"Select Season for {player}", seasons, key=f"season_{i}")
+    values = scaled_values.fillna(0).tolist()
+    values.append(values[0])  # Close radar chart loop
 
-    row = df[(df['PLAYER'] == player) & (df['Season'] == season)]
-    if not row.empty:
-        selected_data.append(row.iloc[0])
-
-selected_metrics = st.multiselect("Select Performance Metrics to Compare", metrics)
-
-if selected_data and selected_metrics:
-    st.subheader("Interactive Radar Chart")
-
-    data = pd.DataFrame(selected_data)
-    labels = selected_metrics
-    fig = go.Figure()
-
-    max_values = df[selected_metrics].max().replace(0, 1e-5)
-
-    for _, row in data.iterrows():
-        raw_values = row[labels].astype(float)
-        scaled_values = (raw_values / max_values) * 100
-
-        values = scaled_values.fillna(0).tolist()
-        values += values[:1]
-        hover_texts = [
-            f"<b>{label}</b><br>"
+    hover_texts = [
+        (
+            f"<b>{metric}</b><br>"
             f"Raw: {raw:.2f}<br>"
             f"Scaled: {scaled:.2f}%<br>"
-            f"Max: {max_values[label]:.2f}<br>"
-            f"<b>{row['PLAYER']} {row['Season']}</b>"
-            for label, raw, scaled in zip(labels, raw_values, values[:-1])
-        ]
+            f"Max: {max_values[metric]:.2f}<br>"
+            f"<b>{player_series['PLAYER']} {player_series['Season']}</b>"
+        )
+        for metric, raw, scaled in zip(metrics_list, raw_values, values[:-1])
+    ]
 
-        fig.add_trace(go.Scatterpolar(
+
+    return {"scaled_values": values, "hover_texts": hover_texts}
+
+
+def generate_radar_chart(data_df, selected_players_df, metrics_list):
+    """
+    Generate a radar chart for player comparisons.
+
+    Args:
+        data_df (pd.DataFrame): Full dataset.
+        selected_players_df (pd.DataFrame): DataFrame of selected players.
+        metrics_list (list): Selected performance metrics.
+
+    Returns:
+        go.Figure: Radar chart figure.
+    """
+    radar_fig = go.Figure()
+
+    for _, player_data in selected_players_df.iterrows():
+        computed_values = compute_scaled_values(data_df, metrics_list, player_data)
+        values = computed_values["scaled_values"]
+        hover_texts = computed_values["hover_texts"]
+
+        radar_fig.add_trace(go.Scatterpolar(
             r=values,
-            theta=labels + [labels[0]],
-            fill='toself',
-            name=f"{row['PLAYER']} {row['Season']}",
+            theta=metrics_list + [metrics_list[0]],
+            fill="toself",
+            name=f"{player_data['PLAYER']} {player_data['Season']}",
             line={"width": 3},
             mode="markers+lines",
             marker={"size": 8, "opacity": 0.8},
-            hovertemplate="<br>".join([
-                "%{text}"
-            ]),
+            hovertemplate="<br>".join(["%{text}"]),
             text=hover_texts,
         ))
 
-    fig.update_layout(
+    radar_fig.update_layout(
         margin={"l": 130, "r": 100, "t": 100, "b": 100},
         width=950,
         height=850,
@@ -141,16 +139,49 @@ if selected_data and selected_metrics:
                 "showticklabels": True,
                 "ticks": "outside",
                 "linewidth": 1,
-                "tickfont": {"color": "black", "size": 12}
+                "tickfont": {"color": "black", "size": 12},
             }
         },
         showlegend=True,
         title={"text": "<b>Player Performance Radar</b>", "font": {"size": 24}},
-        font={"size": 12}
+        font={"size": 12},
     )
-    st.plotly_chart(fig, use_container_width=True)
 
-elif not selected_metrics:
+    return radar_fig
+
+
+# Streamlit UI
+df_main, available_metrics = load_data()
+st.sidebar.title("Filters")
+
+num_selected_players = st.sidebar.slider("Number of Player Selections", 1, 10, 2)
+selected_players = []
+
+for idx in range(num_selected_players):
+    selected_player = st.sidebar.selectbox(
+        f"Select Player {idx+1}",
+        df_main["PLAYER"].unique(),
+        key=f"player_{idx}"
+    )
+    available_seasons = df_main[df_main["PLAYER"] == selected_player]["Season"].unique()
+    selected_season = st.sidebar.selectbox(
+        f"Select Season for {selected_player}", available_seasons, key=f"season_{idx}"
+    )
+
+    player_row = df_main[
+        (df_main["PLAYER"] == selected_player)
+        & (df_main["Season"] == selected_season)
+    ]
+    if not player_row.empty:
+        selected_players.append(player_row.iloc[0])
+
+chosen_metrics = st.multiselect("Select Performance Metrics to Compare", available_metrics)
+
+if selected_players and chosen_metrics:
+    st.subheader("Interactive Radar Chart")
+    radar_chart = generate_radar_chart(df_main, pd.DataFrame(selected_players), chosen_metrics)
+    st.plotly_chart(radar_chart, use_container_width=True)
+elif not chosen_metrics:
     st.info("Please select at least one performance metric.")
-elif not selected_data:
+elif not selected_players:
     st.info("Please select at least one player and season.")

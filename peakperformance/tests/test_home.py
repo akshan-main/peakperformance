@@ -11,7 +11,7 @@ This module contains tests for:
 
 These tests use unittest and unittest.mock to simulate external dependencies.
 
-Author: Joshua Son
+Author: Akshan Krithick
 Date: March 17, 2025
 """
 import sys

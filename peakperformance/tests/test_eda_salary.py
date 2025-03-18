@@ -9,14 +9,14 @@ This module contains tests for:
 
 These tests use unittest and unittest.mock to simulate external dependencies.
 
-Author: Joshua Son
+Author: Akshan Krithick
 Date: March 17, 2025
 """
 import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 import numpy as np
-from peakperformance.pages.salary import (
+from peakperformance.pages.eda_salary import (
     load_data,
     filter_data,
     plot_scatter_chart,
@@ -99,7 +99,7 @@ class TestSalaryModule(unittest.TestCase):
         self.assertIsNotNone(chart)
         self.assertEqual(chart.to_dict()["mark"]["type"], "bar")
 
-    @patch('peakperformance.pages.salary.train_test_split')
+    @patch('peakperformance.pages.eda_salary.train_test_split')
     def test_train_model(self, mock_split):
         """Test if `train_model` correctly trains a machine learning model on salary data."""
         df = pd.DataFrame({
