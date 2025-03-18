@@ -15,7 +15,7 @@ Functions:
 - `fifa_button(image_file, size, target_page)`: Creates a clickable image button.
 - `main()`: Initializes and renders the homepage layout.
 
-Author: Joshua Son
+Author: Akshan Krithick
 Date: March 17, 2025
 """
 import os
@@ -197,16 +197,16 @@ def main():
     row2_col1, row2_col2 = st.columns([1, 1])
 
     with row1_col1:
-        fifa_button('kickoff.png', 'large', 'pages/salary.py')
+        fifa_button('kickoff.png', 'large', 'pages/eda_salary.py')
 
     with row1_col2:
         fifa_button('stats.jpeg', 'large', 'pages/player_plot.py')
 
     with row2_col1:
-        fifa_button('similarity.jpeg', 'small', 'pages/chatbot.py')
+        fifa_button('similarity.jpeg', 'small', 'pages/statmatch.py')
 
     with row2_col2:
-        fifa_button('career.jpg', 'small', 'pages/RLmodel.py')
+        fifa_button('career.jpg', 'small', 'pages/rl_model.py')
 
 
 if __name__ == "__main__":
