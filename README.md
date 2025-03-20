@@ -28,19 +28,18 @@
 
 ## ⚽️ Introduction  
 
-What is the salary a forward at Manchester United earns on average? Who is the most similar player to 2017 Neymar in the 2023 Premier League season? We didn't know the answers to these questions either before **PeakPerformance**.
+What is the average salary a forward at Manchester United earns? Who is the most similar player to 2017 Neymar in the 2023 Premier League season?  We didn't know the answers to these questions either until we built **PeakPerformance**.
 
-**PeakPerformance** is an AI-powered football analytics platform designed to <span style="color:blue">predict seasonal performance</span>, <span style="color:orange">predict salaries</span>,<span style="color:green"> suggest similar players to a particular player</span>,<span style="color:red">simulate player contract negotiations</span>, using machine learning and reinforcement learning. It features an interactive Streamlit dashboard with five fully-functional pages.
+**PeakPerformance** is an AI-powered football analytics platform designed to <span style="color:blue">predict seasonal performance</span>, <span style="color:orange">predict salaries</span>,<span style="color:green"> suggest similar players to a particular player</span>,<span style="color:red">simulate player contract negotiations</span>, using machine learning and reinforcement learning. 
 
-Explore the deployed web app: [peakperformance](https://peakperformance.streamlit.app/)
+It features an interactive Streamlit dashboard with five fully-functional pages.
+Explore the deployed web app here: [peakperformance](https://peakperformance.streamlit.app/)
 
 ---
 
 ## ☰ Table of Contents
 
-## ☰ Table of Contents
-
-- [Introduction](#introduction)
+- [Introduction](#️introduction)
 - [Installation & Setup](#installation--setup)
 - [The Team (Contributors)](#the-team-contributors)
 - [Features & Pages Overview](#features--pages-overview)
@@ -167,12 +166,13 @@ streamlit run peakperformance/home.py
 
 ---
 ## 📊 Dataset
+For the below mentioned datasets, we used player data from 2017/18 season to 2023/24 season.
+
 ### Dataset Structure
 
-- filtered_playerratingssalaries.csv: Cleaned performance, rating and salary data.
-- thousandminsormore.csv: Players with more than 1000 minutes played.
-- player_data_with_predictions.csv: Used in RL environment with predicted ratings and player aging curves.
-
+- filtered_playerratingssalaries.csv: Used to train the reinforcement learning model.
+- thousandminsormore.csv: Filtered ratings, salary data for players with more than 1000 minutes played.
+- player_data_with_predictions.csv: Player data with upcoming season ratings prediction (found using XGBoost).
 ### Data Sources
 [FBref website](https://fbref.com/en/) - Player performance metrics data
 <br>
