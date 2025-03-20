@@ -40,59 +40,31 @@ jobs:
         run: |
           conda install --yes coverage pylint
           conda activate myenv
-
-      # Debug: Show /tmp contents before tests
-      - name: Check /tmp before tests
+      - name: Unit tests
         run: |
-          echo "Checking /tmp directory before tests..."
-          ls -lah /tmp/ || echo "⚠️ /tmp directory is empty"
-
-      - name: Run Unit Tests with Debugging
-        id: run_tests
-        run: |
-          set -o pipefail  # Ensure failure detection works
-          python -m unittest discover -s peakperformance/tests | tee test_output.log
+          python -m unittest discover -s peakperformance/tests
           coverage run -m unittest discover -s peakperformance/tests
-          coverage report | tee coverage_output.log
-        continue-on-error: true
-
-      - name: Check /tmp after tests
+          coverage report
+          coverage lcov -o coverage.lcov
+      - name: Debug LCOV File
         run: |
-          echo "📌 Checking /tmp directory after tests..."
-          ls -lah /tmp/ || echo "No temp files were saved."
-
-      - name: Final Workflow Status
-        run: |
-          if grep -q "FAILED" test_output.log; then
-            echo " Tests failed! Exiting with error."
-            exit 1
-          elif grep -q "ERROR" test_output.log; then
-            echo "Tests had unexpected errors but not failures. Proceeding with caution."
-            exit 1
-          elif [[ "${{ steps.run_tests.outcome }}" == "failure" ]]; then
-            echo "Tests passed, but unexpected error occurred. Ignoring /tmp issue."
-            exit 0
-          else
-            echo "Tests passed successfully!"
-            exit 0
-          fi
-
+          ls -lah
+          cat coverage.lcov | head -n 20
+        
       - name: Report code coverage to Coveralls
-        if: success()
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: coverage.lcov 
           flag-name: run-${{ join(matrix.*, ' - ') }}
           parallel: true
-
+          
       - name: Lint with pylint
         run: |
-          pylint peakperformance/**/*.py
-
+          pylint peakperformance/*/.py
   finish:
     needs: build_test
-    if: always()
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
