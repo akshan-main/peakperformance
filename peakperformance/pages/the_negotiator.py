@@ -448,12 +448,13 @@ if st.sidebar.button("📜 Submit Offer"):
         else:
             st.markdown(
                 """
-                <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
+                <div style="padding: 20px; border-radius: 10px;
+                text-align: center; font-weight: bold;
                             font-size: 22px; background-color: #f39c12;">
                     <h2>💬 Needs Re-Negotiation</h2>
-                    <p>The player's agent wants a better deal. Adjust your proposal or choose a different action.</p>
+                    <p>The player's agent wants a better deal. 
+                    Adjust your proposal or choose a different action.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
-
