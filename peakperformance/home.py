@@ -133,8 +133,8 @@ def inject_custom_styles():
                 transform: scale(1.03);
                 cursor: pointer;
             }
-            .large-button { height: 450px; }
-            .small-button { height: 250px; }
+            .large-button { height: 300px; }
+            .small-button { height: 150px; }
             .image-content {
                 width: 100%;
                 height: 100%;
@@ -207,13 +207,13 @@ def main():
         fifa_button('kickoff.png', 'large', 'pages/eda_salary.py')
 
     with row1_col2:
-        fifa_button('stats.jpeg', 'large', 'pages/player_plot.py')
+        fifa_button('stats.png', 'large', 'pages/player_plot.py')
 
     with row2_col1:
-        fifa_button('similarity.jpeg', 'small', 'pages/statmatch.py')
+        fifa_button('similarity.png', 'small', 'pages/statmatch.py')
 
     with row2_col2:
-        fifa_button('career.jpg', 'small', 'pages/the_negotiator.py')
+        fifa_button('career.png', 'small', 'pages/the_negotiator.py')
 
 
 if __name__ == "__main__":
