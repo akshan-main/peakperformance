@@ -6,3 +6,4 @@ datetime
 altair
 torch
 matplotlib
+python-dotenv

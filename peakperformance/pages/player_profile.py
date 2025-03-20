@@ -9,13 +9,17 @@ Date: March 16, 2025
 """
 
 import io
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 import streamlit as st
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+
+load_dotenv()
 
 # Global Constants
 CSV_PATH: Path = (
@@ -24,8 +28,8 @@ CSV_PATH: Path = (
     / "Ratings Combined"
     / "player_data_with_predictions.csv"
 )
-API_KEY: str = "3"  # Free API key from TheSportsDB
-PLAYER_API_URL: str = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/searchplayers.php"
+API_KEY = os.getenv("API_KEY")
+PLAYER_API_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/searchplayers.php"
 
 
 def set_theme() -> None:
