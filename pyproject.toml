@@ -17,7 +17,7 @@ authors = [
   { name="Balaji Boopal" },
   { name="Joshua Son" },
 ]
-description = "A small entropy example"
+description = "A football analysis app"
 readme = "README.md"
 requires-python = ">=3"
 classifiers = [
