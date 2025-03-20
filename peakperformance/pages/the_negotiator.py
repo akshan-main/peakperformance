@@ -356,12 +356,15 @@ CLUB, RATING, AGE, CURRENT_WAGE, POSITION = (
     player_details["position"],
 )
 
-# Only generate a random wage if it hasn't been set yet
-if "agent_wage" not in st.session_state:
+# Check if the selected player has changed
+if "prev_player" not in st.session_state or st.session_state.prev_player != PLAYER_NAME:
+    # Update the cached wage and record the new player
     st.session_state.agent_wage = generate_agent_offer(AGE, RATING, CURRENT_WAGE)
+    st.session_state.prev_player = PLAYER_NAME
 
 # Use the wage from session state
 agent_wage = st.session_state.agent_wage
+
 
 st.sidebar.subheader("💼 Your Contract Proposal")
 
@@ -414,34 +417,43 @@ action_mapping = {
 action_index = action_mapping[action_choice]
 
 if st.sidebar.button("📜 Submit Offer"):
-    progress_bar = st.progress(0)
-    for i in range(5):
-        time.sleep(0.3)
-        progress_bar.progress((i + 1) * 20)
-
-    # Use the chosen action instead of always passing 0
-    next_state, negotiation_reward, counteroffer, negotiation_log, done = ENV.step(
-        action_index, PROPOSED_WAGE, CONTRACT_LENGTH
-    )
-
-    # Update the session state for the next negotiation round
-    st.session_state.state = next_state
-
-    if done:
-        display_newspaper_announcement(PLAYER_NAME, PROPOSED_WAGE, CONTRACT_LENGTH,
-                                       CLUB, negotiation_reward)
-        if counteroffer:
-            st.warning(counteroffer)
-        for log in negotiation_log:
-            st.info(log)
+    # Check for older players with too long a contract length
+    if AGE > 32 and CONTRACT_LENGTH > 3:
+        st.error("Player has rejected the offer due to an overly long contract. "
+        "Please try reducing the contract length to 3 years or less.")
+        # Optionally, update the session state if needed.
+        st.session_state.state = ENV.state
+    elif AGE < 22 and CONTRACT_LENGTH < 3:
+        st.error("Player has rejected the offer due to an extremely short contract. "
+        "Please try increasing the contract length.")
+        # Optionally, update the session state if needed.
+        st.session_state.state = ENV.state
     else:
-        st.markdown(
-            """
-            <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
-                        font-size: 22px; background-color: #f39c12;">
-                <h2>💬 Needs Re-Negotiation</h2>
-                <p>The player's agent wants a better deal. Adjust your proposal or choose a different action.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        progress_bar = st.progress(0)
+        for i in range(5):
+            time.sleep(0.3)
+            progress_bar.progress((i + 1) * 20)
+
+        next_state, negotiation_reward, counteroffer, negotiation_log, done = ENV.step(
+            action_index, PROPOSED_WAGE, CONTRACT_LENGTH
         )
+        st.session_state.state = next_state
+        if done:
+            display_newspaper_announcement(PLAYER_NAME, PROPOSED_WAGE, CONTRACT_LENGTH,
+                                           CLUB, negotiation_reward)
+            if counteroffer:
+                st.warning(counteroffer)
+            for log in negotiation_log:
+                st.info(log)
+        else:
+            st.markdown(
+                """
+                <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
+                            font-size: 22px; background-color: #f39c12;">
+                    <h2>💬 Needs Re-Negotiation</h2>
+                    <p>The player's agent wants a better deal. Adjust your proposal or choose a different action.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
