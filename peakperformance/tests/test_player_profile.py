@@ -66,7 +66,7 @@ class TestPlayerProfile(unittest.TestCase):
         peakperformance.pages.player_profile.set_theme()
         self.assertTrue(mock_markdown.called)
         args, kwargs = mock_markdown.call_args
-        self.assertIn("background-color: white", args[0])
+        self.assertIn("background: #15202B", args[0])
         self.assertTrue(kwargs.get("unsafe_allow_html", False))
 
     def test_load_player_data_success(self) -> None:
