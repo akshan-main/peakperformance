@@ -38,8 +38,6 @@ Explore the deployed web app: [peakperformance](https://peakperformance.streamli
 
 ## ☰ Table of Contents
 
-## ☰ Table of Contents
-
 - [Introduction](#introduction)
 - [Installation & Setup](#installation--setup)
 - [The Team (Contributors)](#the-team-contributors)
@@ -169,10 +167,9 @@ streamlit run peakperformance/home.py
 ## 📊 Dataset
 ### Dataset Structure
 
-- filtered_playerratingssalaries.csv: Cleaned performance, rating and salary data.
-- thousandminsormore.csv: Players with more than 1000 minutes played.
-- player_data_with_predictions.csv: Used in RL environment with predicted ratings and player aging curves.
-
+- filtered_playerratingssalaries.csv: Used to train the reinforcement learning model.
+- thousandminsormore.csv: Filtered ratings, salary data for players with more than 1000 minutes played.
+- player_data_with_predictions.csv: Player data with upcoming season ratings prediction (found using XGBoost).
 ### Data Sources
 [FBref website](https://fbref.com/en/) - Player performance metrics data
 <br>
