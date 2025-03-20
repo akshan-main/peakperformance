@@ -356,7 +356,12 @@ CLUB, RATING, AGE, CURRENT_WAGE, POSITION = (
     player_details["position"],
 )
 
-agent_wage: float = generate_agent_offer(AGE, RATING, CURRENT_WAGE)
+# Only generate a random wage if it hasn't been set yet
+if "agent_wage" not in st.session_state:
+    st.session_state.agent_wage = generate_agent_offer(AGE, RATING, CURRENT_WAGE)
+
+# Use the wage from session state
+agent_wage = st.session_state.agent_wage
 
 st.sidebar.subheader("💼 Your Contract Proposal")
 
@@ -393,19 +398,32 @@ with col2:
         unsafe_allow_html=True,
     )
 
+# Add a dropdown for selecting a negotiation action in the sidebar
+action_choice = st.sidebar.selectbox(
+    "Select Negotiation Action:",
+    ["Accept Contract", "Negotiate Higher Wage", "Change Contract Length", "Reject Offer"]
+)
+action_mapping = {
+    "Accept Contract": 0,
+    "Negotiate Higher Wage": 1,
+    "Change Contract Length": 2,
+    "Reject Offer": 3
+}
+action_index = action_mapping[action_choice]
+
 if st.sidebar.button("📜 Submit Offer"):
     progress_bar = st.progress(0)
     for i in range(5):
         time.sleep(0.3)
         progress_bar.progress((i + 1) * 20)
 
+    # Use the chosen action instead of always passing 0
     next_state, negotiation_reward, counteroffer, negotiation_log, done = ENV.step(
-        0, PROPOSED_WAGE, CONTRACT_LENGTH
+        action_index, PROPOSED_WAGE, CONTRACT_LENGTH
     )
 
-    DECISION_TEXT = ""
-    FEEDBACK_TEXT = ""
-    COLOR_CLASS = ""
+    # Update the session state for the next negotiation round
+    st.session_state.state = next_state
 
     if done:
         display_newspaper_announcement(PLAYER_NAME, PROPOSED_WAGE, CONTRACT_LENGTH,
@@ -414,29 +432,14 @@ if st.sidebar.button("📜 Submit Offer"):
             st.warning(counteroffer)
         for log in negotiation_log:
             st.info(log)
-    elif negotiation_reward == 0:  # Ensures it's not accepted or rejected
+    else:
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
                         font-size: 22px; background-color: #f39c12;">
                 <h2>💬 Needs Re-Negotiation</h2>
-                <p>Player's agent wants a better deal.</p>
+                <p>The player's agent wants a better deal. Adjust your proposal or choose a different action.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
-
-    # Display Feedback
-    st.markdown(
-        f"""
-        <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
-                    font-size: 22px;">
-            <h2>{DECISION_TEXT}</h2>
-            <p>{FEEDBACK_TEXT}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Update session state and trigger rerun
-    st.session_state.state = next_state
