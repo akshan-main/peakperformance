@@ -23,6 +23,10 @@ import sys
 import time
 import random
 from pathlib import Path
+
+# ----------------------
+# Third-party
+# ----------------------
 import streamlit as st
 import torch
 from torch import nn
@@ -204,7 +208,8 @@ def display_newspaper_announcement(
             f"per week for {contract_length} years at {club}."
         )
         quote = (
-            f"🗣️ {player_name}: 'I'm excited to continue my journey with {club}! It's a dream come true.'"
+            f"🗣️ {player_name}: 'I'm excited to continue my journey "
+            "with {club}! It's a dream come true.'"
         )
         st.balloons()
     else:
@@ -214,7 +219,8 @@ def display_newspaper_announcement(
             f"{player_name} has rejected the offer of €{int(proposed_wage):,} per week. "
             "Sources indicate the player's camp wanted a better deal."
         )
-        quote = "⚽ Player's Agent: 'We had our conditions, and they weren’t met. We will explore other options.'"
+        quote = ("⚽ Player's Agent: 'We had our conditions, ",
+                 "and they werent met. We will explore other options.")
 
     st.markdown(newspaper_style, unsafe_allow_html=True)
     st.markdown(
@@ -249,6 +255,9 @@ class DQN(nn.Module):
         self.fc3 = nn.Linear(64, action_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Feed forward network
+        """
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         return self.fc3(x)
@@ -267,6 +276,7 @@ DQN_model.eval()
 #############################
 
 def set_background() -> None:
+    """Background Image"""
     image_url = (
         "https://assets.goal.com/images/v3/blta810dc2fdffb1bf9/"
         "1bda86cee7f6af13c4bdcda3c6f763b9e1b1052a.jpg?auto=webp&format=pjpg&width=2048&quality=60"
@@ -306,9 +316,8 @@ ENV = st.session_state.env
 
 # RL agent from train_model
 # We'll re-instantiate in case we want the agent directly in this file:
-# But you might skip if you want to rely on the global RL_agent from train_model. 
+# But you might skip if you want to rely on the global RL_agent from train_model.
 if "RL_agent" not in st.session_state:
-    from peakperformance.backend.train_model import ReinforcementLearningAgent
     st.session_state.RL_agent = ReinforcementLearningAgent(STATE_DIM, ACTION_DIM)
     st.session_state.RL_agent.load_model(str(MODEL_PATH))
 
@@ -358,8 +367,10 @@ with col2:
     st.markdown("<h2 style='color:yellow;'>📜 Contract Negotiation</h2>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="background: rgba(0,0,0,0.7); padding: 10px; font-weight:900; font-size:1.5rem; border-radius: 5px;">
-            <b>Agent</b>: "{PLAYER_NAME} expects a minimum wage of <b>€{int(agent_wage):,}</b> per week."
+        <div style="background: rgba(0,0,0,0.7); padding: 10px;
+        font-weight:900; font-size:1.5rem; border-radius: 5px;">
+            <b>Agent</b>: "{PLAYER_NAME} expects a minimum
+            wage of <b>€{int(agent_wage):,}</b> per week."
         </div>
         """,
         unsafe_allow_html=True,
@@ -409,7 +420,8 @@ if st.sidebar.button("📜 Submit Offer"):
                                 font-weight: bold; font-size: 22px; background-color: #f39c12;">
                         <h2>💬 Needs Re-Negotiation</h2>
                         <p>The player's agent wants a better deal. 
-                        The RL agent will pick another action next time, or adjust your wage/length.</p>
+                        The RL agent will pick another action next time, or adjust
+                        your wage/length.</p>
                     </div>
                     """,
                     unsafe_allow_html=True,
