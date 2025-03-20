@@ -1,10 +1,12 @@
 """
 Module for training a reinforcement learning model for contract negotiations.
 
-This module loads player data, defines the Deep Q-Network (DQN) model,
-a contract negotiation environment, and a reinforcement learning agent.
-It then trains the RL model using the provided player data and saves
-both the trained model and a reward progression plot.
+This module loads player data, defines the Deep Q-Network (DQN) model, a contract
+negotiation environment, and a reinforcement learning agent. It then trains the RL model
+using the provided player data and saves both the trained model and a reward progression plot.
+
+Author: Balaji Boopal
+Date: March 16, 2025
 
 Global Variables:
     None
@@ -12,6 +14,7 @@ Global Variables:
 Returns:
     None
 """
+
 from pathlib import Path
 import random
 import collections
@@ -30,8 +33,8 @@ def load_player_data(file_path: str) -> pd.DataFrame:
         file_path (str): The path to the CSV file containing player data.
 
     Returns:
-        pd.DataFrame: DataFrame containing player data with rows having missing
-                      values in "GROSS P/W (EUR)", "Rating", "CLUB", or "pos" dropped.
+        pd.DataFrame: DataFrame containing player data with rows having missing values
+                      in "GROSS P/W (EUR)", "Rating", "CLUB", or "pos" dropped.
     """
     player_data = pd.read_csv(file_path)
     return player_data.dropna(subset=["GROSS P/W (EUR)", "Rating", "CLUB", "pos"])
@@ -45,6 +48,7 @@ class DeepQNetwork(nn.Module):
         state_dim (int): The dimension of the state input.
         action_dim (int): The number of possible actions.
     """
+
     def __init__(self, state_dim: int, action_dim: int):
         super().__init__()
         self.fc1 = nn.Linear(state_dim, 64)
@@ -79,6 +83,7 @@ class ContractNegotiationEnvironment:
         done (bool): Flag indicating whether the negotiation is finished.
         player (pd.Series): The current player's data.
     """
+
     def __init__(self, player_data: pd.DataFrame):
         self.player_data = player_data
         self.state = None
@@ -96,7 +101,8 @@ class ContractNegotiationEnvironment:
         Returns:
             np.ndarray: The initial state for the player.
         """
-        player_seasons = self.player_data[self.player_data["PLAYER"] == player_name]
+        player_seasons = self.player_data[self.player_data["PLAYER"]
+                                          == player_name]
         self.player = player_seasons.iloc[-1]
         current_wage = self.player["GROSS P/W (EUR)"]
 
@@ -158,10 +164,8 @@ class ContractNegotiationEnvironment:
                 reward = 100 + (proposed_wage / expected_wage) * 50
                 self.done = True
                 negotiation_log.append(
-                    f"Contract Accepted at €{int(proposed_wage):,}/week "
-                    f"for {contract_length} years."
+                    f"Contract Accepted at €{int(proposed_wage):,}/week for {contract_length} years."
                 )
-
             else:
                 reward = -20
                 self.done = False
@@ -174,7 +178,8 @@ class ContractNegotiationEnvironment:
             else:
                 reward = 10 + base_reward
                 counteroffer = f"Player wants at least €{int(expected_wage):,}/week!"
-                negotiation_log.append(f"Player countered with €{int(expected_wage):,}/week")
+                negotiation_log.append(
+                    f"Player countered with €{int(expected_wage):,}/week")
 
         elif action == 2:  # Change Contract Length
             reward = 8 if abs(contract_length - 4) <= 1 else -5
@@ -216,6 +221,7 @@ class ReinforcementLearningAgent:
         epsilon_min (float): Minimum exploration rate.
         memory (collections.deque): Replay memory.
     """
+
     def __init__(
         self,
         state_dim: int,
@@ -247,7 +253,17 @@ class ReinforcementLearningAgent:
         return torch.argmax(self.model(state_tensor)).item()
 
     def save_model(self, path: str = None, use_jit: bool = False) -> None:
-        """Saves the model as a state_dict or TorchScript model."""
+        """
+        Saves the RL model to a file.
+
+        Parameters:
+            path (str, optional): The file path to save the model. Defaults to assets/rl_contract_model.pth.
+            use_jit (bool, optional): If True, saves the model using TorchScript (JIT);
+                                      otherwise, saves the state_dict.
+
+        Returns:
+            None
+        """
         if path is None:
             path = Path.cwd() / "assets" / "rl_contract_model.pth"
 
@@ -259,14 +275,22 @@ class ReinforcementLearningAgent:
             torch.save(self.model.state_dict(), path)
             print("🟡 Saved model using `state_dict` format.")
 
-
     def load_model(self, path: str = None) -> None:
-        """Loads the model as a state_dict or TorchScript model."""
+        """
+        Loads the RL model from a file.
+
+        Parameters:
+            path (str, optional): The file path from which to load the model. Defaults to assets/rl_contract_model.pth.
+
+        Returns:
+            None
+        """
         if path is None:
             path = Path.cwd() / "assets" / "rl_contract_model.pth"
 
         try:
-            self.model.load_state_dict(torch.load(path, map_location=torch.device("cpu")))
+            self.model.load_state_dict(torch.load(
+                path, map_location=torch.device("cpu")))
             print("✅ Loaded model using `state_dict` format.")
         except (RuntimeError, TypeError, ValueError) as e:
             print(f"⚠️ Detected TorchScript model, error: {e}")
@@ -326,9 +350,9 @@ def main() -> None:
     Returns:
         None
     """
-
     data_file_path = (
-        Path.cwd() / "dataset" / "Ratings Combined" / "filtered_playerratingssalaries.csv"
+        Path.cwd() / "dataset" / "Ratings Combined" /
+        "filtered_playerratingssalaries.csv"
     )
     loaded_player_data = load_player_data(data_file_path)
     train_model(loaded_player_data)
