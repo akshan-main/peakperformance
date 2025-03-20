@@ -391,8 +391,10 @@ with col2:
                 unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;">
-            <b>Agent</b>: "{PLAYER_NAME} expects a wage of <b>€{int(agent_wage):,}</b> per week."
+        <div style="background: rgba(0,0,0,0.7); padding: 10px; font-weight:900;
+        font-size:1.5rem; border-radius: 5px;">
+            <b>Agent</b>: "{PLAYER_NAME} expects a minimum
+            wage of <b>€{int(agent_wage):,}</b> per week."
         </div>
         """,
         unsafe_allow_html=True,
