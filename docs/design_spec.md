@@ -51,17 +51,3 @@ The *Peak Performance* system is structured as a multi-page Streamlit applicatio
   - Negotiation outcomes including reward, counteroffer messages, and negotiation logs
 - **Example:**  
   When the user inputs a proposed wage, the simulator computes whether the player would accept the offer, counter, or reject it.
-
-## 3. Interaction Diagrams
-
-### Interaction Diagram for Use Case 1: Analyze Player Salary Trends
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant DM as Data Manager
-    participant VM as Visualization Manager
-    U->>DM: Request player data with filters (e.g., league, season)
-    DM-->>U: Returns filtered DataFrame
-    U->>VM: Request interactive visualizations
-    VM-->>U: Render scatter plot and bar charts

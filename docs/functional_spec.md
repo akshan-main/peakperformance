@@ -72,15 +72,3 @@ Each CSV is structured with rows representing individual players (or player seas
   
   4. **User Exploration:**  
      - The user interacts with the plots (e.g., hovering, zooming) to identify trends and outliers.
-
-  **Interaction Diagram:**
-
-  ```mermaid
-  sequenceDiagram
-      participant U as User
-      participant DM as Data Manager
-      participant VM as Visualization Manager
-      U->>DM: Request filtered player data
-      DM-->>U: Returns filtered DataFrame
-      U->>VM: Apply filters & request plots
-      VM-->>U: Render interactive charts (scatter, bar)

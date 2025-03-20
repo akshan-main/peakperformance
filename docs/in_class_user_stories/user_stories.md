@@ -16,3 +16,8 @@
 *	Needs to be able to see whether current/future contracts are worth it
     +	Compare player contracts with other players in given position/performance
 *	Knows how to interpret whether a player is worth given skill level
+
+## User Story 3:
+*	Football fan
+*	Used to like a player a lot in his prime years.
+*	Wants to know who are the most similar players to his favorite player in during the player’s prime year, in a league that the fan currently follows
