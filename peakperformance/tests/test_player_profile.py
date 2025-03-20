@@ -4,6 +4,9 @@ Unit tests for the football player profile module.
 All tests are designed to pass when running:
     coverage run -m unittest discover -s peakperformance/tests
 
+Author: Balaji Boopal
+Date: March 16, 2025
+
 Parameters:
     None
 
@@ -53,10 +56,10 @@ class TestPlayerProfile(unittest.TestCase):
     def test_set_theme(self, mock_markdown: MagicMock) -> None:
         """
         Test that set_theme calls st.markdown with the proper CSS style.
-        
+
         Parameters:
             mock_markdown (MagicMock): The patched st.markdown function.
-        
+
         Returns:
             None
         """
@@ -69,10 +72,10 @@ class TestPlayerProfile(unittest.TestCase):
     def test_load_player_data_success(self) -> None:
         """
         Test load_player_data returns a DataFrame when the CSV file exists.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
@@ -81,9 +84,11 @@ class TestPlayerProfile(unittest.TestCase):
             tmp_file_name = tmp_file.name
 
         try:
-            df = peakperformance.pages.player_profile.load_player_data(tmp_file_name)
+            df = peakperformance.pages.player_profile.load_player_data(
+                tmp_file_name)
             self.assertFalse(df.empty)
-            self.assertListEqual(list(df.columns), list(self.dummy_data.columns))
+            self.assertListEqual(
+                list(df.columns), list(self.dummy_data.columns))
         finally:
             os.remove(tmp_file_name)
 
@@ -92,14 +97,15 @@ class TestPlayerProfile(unittest.TestCase):
         """
         Test load_player_data returns an empty DataFrame and calls st.error
         when the file is not found.
-        
+
         Parameters:
             mock_error (MagicMock): The patched st.error function.
-        
+
         Returns:
             None
         """
-        df = peakperformance.pages.player_profile.load_player_data("non_existent_file.csv")
+        df = peakperformance.pages.player_profile.load_player_data(
+            "non_existent_file.csv")
         self.assertTrue(df.empty)
         mock_error.assert_called_once()
 
@@ -107,10 +113,10 @@ class TestPlayerProfile(unittest.TestCase):
     def test_fetch_player_data_success(self, mock_get: MagicMock) -> None:
         """
         Test fetch_player_data returns player data when the API call is successful.
-        
+
         Parameters:
             mock_get (MagicMock): The patched requests.get function.
-        
+
         Returns:
             None
         """
@@ -119,7 +125,8 @@ class TestPlayerProfile(unittest.TestCase):
         dummy_response.json.return_value = {"player": [self.dummy_api_data]}
         mock_get.return_value = dummy_response
 
-        result = peakperformance.pages.player_profile.fetch_player_data("Test Player")
+        result = peakperformance.pages.player_profile.fetch_player_data(
+            "Test Player")
         self.assertEqual(result, self.dummy_api_data)
         mock_get.assert_called_once()
 
@@ -127,10 +134,10 @@ class TestPlayerProfile(unittest.TestCase):
     def test_fetch_player_data_no_player(self, mock_get: MagicMock) -> None:
         """
         Test fetch_player_data returns an empty dictionary when no player data is found.
-        
+
         Parameters:
             mock_get (MagicMock): The patched requests.get function.
-        
+
         Returns:
             None
         """
@@ -139,7 +146,8 @@ class TestPlayerProfile(unittest.TestCase):
         dummy_response.json.return_value = {"player": None}
         mock_get.return_value = dummy_response
 
-        result = peakperformance.pages.player_profile.fetch_player_data("Unknown Player")
+        result = peakperformance.pages.player_profile.fetch_player_data(
+            "Unknown Player")
         self.assertEqual(result, {})
         mock_get.assert_called_once()
 
@@ -151,15 +159,16 @@ class TestPlayerProfile(unittest.TestCase):
     ) -> None:
         """
         Test fetch_player_data returns an empty dictionary when a RequestException is raised.
-        
+
         Parameters:
             mock_error (MagicMock): The patched st.error function.
             mock_get (MagicMock): The patched requests.get function with an exception.
-        
+
         Returns:
             None
         """
-        result = peakperformance.pages.player_profile.fetch_player_data("Test Player")
+        result = peakperformance.pages.player_profile.fetch_player_data(
+            "Test Player")
         self.assertEqual(result, {})
         mock_error.assert_called_once()
 
@@ -167,14 +176,15 @@ class TestPlayerProfile(unittest.TestCase):
     def test_display_player_header(self, mock_markdown: MagicMock) -> None:
         """
         Test display_player_header calls st.markdown with expected HTML content.
-        
+
         Parameters:
             mock_markdown (MagicMock): The patched st.markdown function.
-        
+
         Returns:
             None
         """
-        peakperformance.pages.player_profile.display_player_header(self.dummy_api_data)
+        peakperformance.pages.player_profile.display_player_header(
+            self.dummy_api_data)
         self.assertTrue(mock_markdown.called)
         args, _ = mock_markdown.call_args
         self.assertIn("Test Player", args[0])
@@ -184,10 +194,10 @@ class TestPlayerProfile(unittest.TestCase):
     def test_display_player_info(self, mock_columns: MagicMock) -> None:
         """
         Test display_player_info calls st.columns and the metric method with proper values.
-        
+
         Parameters:
             mock_columns (MagicMock): The patched st.columns function.
-        
+
         Returns:
             None
         """
@@ -195,22 +205,23 @@ class TestPlayerProfile(unittest.TestCase):
         fake_col2 = MagicMock()
         mock_columns.return_value = [fake_col1, fake_col2]
 
-        peakperformance.pages.player_profile.display_player_info(self.dummy_api_data)
+        peakperformance.pages.player_profile.display_player_info(
+            self.dummy_api_data)
         fake_col1.metric.assert_called_once_with("Nationality", "Testland")
         fake_col2.metric.assert_called_once_with("Position", "Forward")
 
     def test_get_rating_trend_found(self) -> None:
         """
         Test get_rating_trend returns the correct DataFrame when player data is found.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         trend_df = peakperformance.pages.player_profile.get_rating_trend("Test Player",
-                                                                        self.dummy_data)
+                                                                         self.dummy_data)
         self.assertIsNotNone(trend_df)
         self.assertIn("season", trend_df.columns)
         self.assertIn("Rating", trend_df.columns)
@@ -219,58 +230,58 @@ class TestPlayerProfile(unittest.TestCase):
     def test_get_rating_trend_not_found(self) -> None:
         """
         Test get_rating_trend returns None when no matching player data is found.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         trend_df = peakperformance.pages.player_profile.get_rating_trend("Nonexistent Player",
-                                                                        self.dummy_data)
+                                                                         self.dummy_data)
         self.assertIsNone(trend_df)
 
     def test_plot_rating_trend_found(self) -> None:
         """
         Test plot_rating_trend returns a BytesIO object when player data is found.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         result = peakperformance.pages.player_profile.plot_rating_trend("Test Player",
-                                                                       self.dummy_data)
+                                                                        self.dummy_data)
         self.assertIsInstance(result, io.BytesIO)
         self.assertGreater(len(result.getvalue()), 0)
 
     def test_plot_rating_trend_not_found(self) -> None:
         """
         Test plot_rating_trend returns None when no matching player data is found.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         result = peakperformance.pages.player_profile.plot_rating_trend("Nonexistent Player",
-                                                                       self.dummy_data)
+                                                                        self.dummy_data)
         self.assertIsNone(result)
 
     def test_get_latest_season_stats_found(self) -> None:
         """
         Test get_latest_season_stats returns correct statistics for the latest season.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         stats = peakperformance.pages.player_profile.get_latest_season_stats("Test Player",
-                                                                            self.dummy_data)
+                                                                             self.dummy_data)
         self.assertIsNotNone(stats)
         self.assertEqual(stats["season"], 2022)
         self.assertEqual(stats["goals"], 10)
@@ -281,15 +292,15 @@ class TestPlayerProfile(unittest.TestCase):
     def test_get_latest_season_stats_not_found(self) -> None:
         """
         Test get_latest_season_stats returns None when no matching player data is found.
-        
+
         Parameters:
             None
-        
+
         Returns:
             None
         """
         stats = peakperformance.pages.player_profile.get_latest_season_stats("Nonexistent Player",
-                                                                            self.dummy_data)
+                                                                             self.dummy_data)
         self.assertIsNone(stats)
 
     @patch("peakperformance.pages.player_profile.st.selectbox", return_value="Test Player")
@@ -318,20 +329,24 @@ class TestPlayerProfile(unittest.TestCase):
             patch(
                 "peakperformance.pages.player_profile.load_player_data",
                 return_value=self.dummy_data
-            ):
+        ):
 
             with patch(
                 "peakperformance.pages.player_profile.plot_rating_trend",
                 return_value=io.BytesIO(b"dummy")
             ) as mock_plot_rating_trend, \
-                patch("peakperformance.pages.player_profile.get_latest_season_stats", return_value={
-                    "season": 2022, "goals": 10, "assists": 4, "matches": 25, "current_rating": 8.0,
-                }) as mock_get_latest_season_stats:
+                    patch("peakperformance.pages.player_profile.get_latest_season_stats",
+                          return_value={
+                              "season": 2022, "goals": 10, "assists": 4,
+                              "matches": 25, "current_rating": 8.0,
+                          }) as mock_get_latest_season_stats:
 
                 with patch("peakperformance.pages.player_profile.st.container") as mock_container, \
-                    patch("peakperformance.pages.player_profile.st.error") as mock_error, \
-                    patch("peakperformance.pages.player_profile.st.markdown") as mock_markdown, \
-                    patch("peakperformance.pages.player_profile.st.image") as mock_image:
+                        patch("peakperformance.pages.player_profile.st.error") as mock_error, \
+                    patch(
+                    "peakperformance.pages.player_profile.st.markdown"
+                ) as mock_markdown, \
+                        patch("peakperformance.pages.player_profile.st.image") as mock_image:
 
                     # Simulate container context manager behavior.
                     mock_container.return_value.__enter__.return_value = None

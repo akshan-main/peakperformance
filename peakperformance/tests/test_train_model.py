@@ -8,6 +8,9 @@ all branches of the contract negotiation environment and RL agent behavior.
 Usage:
     coverage run -m unittest discover -s peakperformance/tests
 
+Author: Balaji Boopal
+Date: March 16, 2025
+
 Parameters:
     None
 
@@ -70,7 +73,8 @@ class TestRLTrain(unittest.TestCase):
             df.to_csv(tmp_file.name, index=False)
             tmp_file_name = tmp_file.name
         try:
-            loaded_df = peakperformance.backend.train_model.load_player_data(tmp_file_name)
+            loaded_df = peakperformance.backend.train_model.load_player_data(
+                tmp_file_name)
             # Expect the row with missing "GROSS P/W (EUR)" to be dropped.
             self.assertEqual(loaded_df.shape[0], 2)
             self.assertListEqual(list(loaded_df.columns), list(df.columns))
@@ -81,7 +85,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test that DeepQNetwork forward pass returns output of correct shape.
         """
-        net = peakperformance.backend.train_model.DeepQNetwork(state_dim=5, action_dim=4)
+        net = peakperformance.backend.train_model.DeepQNetwork(
+            state_dim=5, action_dim=4)
         input_tensor = torch.randn(1, 5)
         output = net(input_tensor)
         self.assertEqual(output.shape, (1, 4))
@@ -90,7 +95,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test that ContractNegotiationEnvironment.reset returns the expected state.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         state = env.reset("Test Player")
         expected_state = np.array([25, 7, 1000, 0, 3], dtype=float)
         np.testing.assert_array_equal(state, expected_state)
@@ -101,7 +107,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test the environment step branch where the proposed wage is too low.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         # For age=25, Rating=7, current wage=1000, expected_wage = 1000 * 1.55 = 1550.
         # Low offer if proposed wage < 0.8 * 1550 = 1240.
@@ -118,7 +125,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test the environment step branch for action 0 when the contract is accepted.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         _, reward, _, negotiation_log, done = env.step(
             action=0, proposed_wage=1600, contract_length=4
@@ -132,7 +140,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test the environment step branch for action 0 when the wage is below expectation.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         _, reward, _, _, done = env.step(
             action=0, proposed_wage=1500, contract_length=4
@@ -144,7 +153,8 @@ class TestRLTrain(unittest.TestCase):
         """
         Test the environment step branch for action 1 with a high enough proposed wage.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         _, reward, counteroffer, _, done = env.step(
             action=1, proposed_wage=1600, contract_length=4
@@ -156,13 +166,15 @@ class TestRLTrain(unittest.TestCase):
         expected_reward = 34.9
         self.assertAlmostEqual(reward, expected_reward, places=4)
         self.assertTrue(done)
-        self.assertEqual(counteroffer, "Player has accepted the new wage offer!")
+        self.assertEqual(
+            counteroffer, "Player has accepted the new wage offer!")
 
     def test_contract_negotiation_environment_step_negotiate_high_wage_fail(self) -> None:
         """
         Test the environment step branch for action 1 when proposed wage is too low.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         _, reward, counteroffer, negotiation_log, done = env.step(
             action=1, proposed_wage=1500, contract_length=4
@@ -178,27 +190,31 @@ class TestRLTrain(unittest.TestCase):
         """
         Test the environment step branch for changing the contract length.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         # Test with contract_length close to 4.
         _, reward, counteroffer, _, _ = env.step(
             action=2, proposed_wage=1600, contract_length=4
         )
         self.assertEqual(reward, 8)
-        self.assertEqual(counteroffer, "Player prefers a 4-year contract instead!")
+        self.assertEqual(
+            counteroffer, "Player prefers a 4-year contract instead!")
         # Test with contract_length far from 4.
         env.reset("Test Player")
         _, reward, counteroffer, _, _ = env.step(
             action=2, proposed_wage=1600, contract_length=6
         )
         self.assertEqual(reward, -5)
-        self.assertEqual(counteroffer, "Player prefers a 4-year contract instead!")
+        self.assertEqual(
+            counteroffer, "Player prefers a 4-year contract instead!")
 
     def test_contract_negotiation_environment_step_reject_offer(self) -> None:
         """
         Test the environment step branch for rejecting the offer.
         """
-        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(self.dummy_df)
+        env = peakperformance.backend.train_model.ContractNegotiationEnvironment(
+            self.dummy_df)
         env.reset("Test Player")
         _, reward, counteroffer, negotiation_log, done = env.step(
             action=3, proposed_wage=1600, contract_length=4
@@ -213,7 +229,7 @@ class TestRLTrain(unittest.TestCase):
         Test that the RL agent selects a random action during exploration.
         """
         agent = peakperformance.backend.train_model.ReinforcementLearningAgent(state_dim=5,
-                                                                                action_dim=4)
+                                                                               action_dim=4)
         agent.epsilon = 1.0  # force exploration
         state = np.array([25, 7, 1000, 0, 3], dtype=float)
         action = agent.select_action(state)
@@ -224,7 +240,7 @@ class TestRLTrain(unittest.TestCase):
         Test that the RL agent selects the best action during exploitation.
         """
         agent = peakperformance.backend.train_model.ReinforcementLearningAgent(state_dim=5,
-                                                                                action_dim=4)
+                                                                               action_dim=4)
         agent.epsilon = 0.0  # force exploitation
         # Override the model's forward to return a fixed tensor.
         agent.model.forward = lambda x: torch.tensor([[0.1, 0.2, 0.3, 0.4]])
@@ -271,6 +287,7 @@ class TestRLTrain(unittest.TestCase):
         mock_load_player_data.return_value = dummy_df
         peakperformance.backend.train_model.main()
         mock_train_model.assert_called_with(dummy_df)
+
 
 if __name__ == "__main__":
     unittest.main()

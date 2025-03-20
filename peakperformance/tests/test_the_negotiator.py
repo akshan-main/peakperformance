@@ -10,6 +10,9 @@ This module tests all functions and classes defined in the contract simulator:
 - DQN.forward
 - set_background
 
+Author: Balaji Boopal
+Date: March 16, 2025
+
 Usage:
     coverage run --source=peakperformance -m unittest discover -s peakperformance/tests
 
@@ -130,8 +133,9 @@ class TestContractSimulator(unittest.TestCase):
         Test display_newspaper_announcement with a positive reward.
         """
         with patch.object(cs.st, "markdown") as mock_markdown, \
-             patch.object(cs.st, "balloons") as mock_balloons:
-            cs.display_newspaper_announcement("Test Player", 15000, 4, "Test Club", 50)
+                patch.object(cs.st, "balloons") as mock_balloons:
+            cs.display_newspaper_announcement(
+                "Test Player", 15000, 4, "Test Club", 50)
             # Expect balloons to be triggered for positive reward.
             mock_balloons.assert_called_once()
             # The headline should indicate a finalized deal.
@@ -144,7 +148,8 @@ class TestContractSimulator(unittest.TestCase):
         Test display_newspaper_announcement with a non-positive reward.
         """
         with patch.object(cs.st, "markdown") as mock_markdown:
-            cs.display_newspaper_announcement("Test Player", 15000, 4, "Test Club", -10)
+            cs.display_newspaper_announcement(
+                "Test Player", 15000, 4, "Test Club", -10)
             args = mock_markdown.call_args_list[1][0][0]
             self.assertIn("CONTRACT TALKS COLLAPSE!", args)
             self.assertIn("Test Player Walks Away From Negotiations!", args)
