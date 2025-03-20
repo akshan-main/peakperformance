@@ -164,7 +164,8 @@ class ContractNegotiationEnvironment:
                 reward = 100 + (proposed_wage / expected_wage) * 50
                 self.done = True
                 negotiation_log.append(
-                    f"Contract Accepted at €{int(proposed_wage):,}/week for {contract_length} years."
+                    f"Contract Accepted at €{int(proposed_wage):,}/week for"
+                    "{contract_length} years."
                 )
             else:
                 reward = -20
@@ -257,7 +258,8 @@ class ReinforcementLearningAgent:
         Saves the RL model to a file.
 
         Parameters:
-            path (str, optional): The file path to save the model. Defaults to assets/rl_contract_model.pth.
+            path (str, optional): The file path to save the model. 
+            Defaults to assets/rl_contract_model.pth.
             use_jit (bool, optional): If True, saves the model using TorchScript (JIT);
                                       otherwise, saves the state_dict.
 
@@ -280,7 +282,8 @@ class ReinforcementLearningAgent:
         Loads the RL model from a file.
 
         Parameters:
-            path (str, optional): The file path from which to load the model. Defaults to assets/rl_contract_model.pth.
+            path (str, optional): The file path from which to load the model. 
+            Defaults to assets/rl_contract_model.pth.
 
         Returns:
             None
