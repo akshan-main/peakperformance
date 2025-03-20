@@ -440,8 +440,3 @@ if st.sidebar.button("📜 Submit Offer"):
 
     # Update session state and trigger rerun
     st.session_state.state = next_state
-
-
-if __name__ == "__main__":
-    set_theme()
-    main()

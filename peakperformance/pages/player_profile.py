@@ -135,7 +135,8 @@ def display_player_header(player_data: dict) -> None:
         f"""
         <div class='player-card'>
             <div class='player-header'>
-                <img src='{photo_url}' class='player-photo' style="width: 300px; height: auto; border-radius: 10px;">
+                <img src='{photo_url}' class='player-photo' style="width: 300px;
+                height: auto; border-radius: 10px;">
                 <div>
                     <h2>{player_name}</h2>
                     <p><strong>{team_name}</strong></p>
