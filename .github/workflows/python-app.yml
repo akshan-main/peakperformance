@@ -61,7 +61,9 @@ jobs:
           
       - name: Lint with pylint
         run: |
-          pylint peakperformance/**/.py
+          pylint peakperformance/**/*.py
+          pylint peakperformance/home.py
+          
   finish:
     needs: build_test
     if: ${{ always() }}
