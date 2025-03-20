@@ -39,18 +39,15 @@ Explore the deployed web app here: [peakperformance](https://peakperformance.str
 
 ## ☰ Table of Contents
 
-- [Introduction](#️introduction)
-- [Installation & Setup](#installation--setup)
-- [The Team (Contributors)](#the-team-contributors)
-- [Features & Pages Overview](#features--pages-overview)
-  - [EDA & Salary Analysis](#eda--salary-analysis)
-  - [Player Performance Radar](#player-performance-radar)
-  - [Player Similarity Matching](#player-similarity-matching)
-  - [Player Profile Lookup](#player-profile-lookup)
-  - [Contract Negotiator](#contract-negotiator)
-- [Dataset](#dataset)
-- [Acknowledgments & References](#acknowledgments--references)
-- [Show Your Support!](#show-your-support)
+- [Introduction](#https://github.com/akshan-main/peakperformance#%EF%B8%8F-introduction)
+- [Repository Structure](https://github.com/akshan-main/peakperformance#repository-structure)
+- [Installation & Setup](https://github.com/akshan-main/peakperformance#-installation--setup)
+- [The Team (Contributors)](https://github.com/akshan-main/peakperformance#-the-team-contributors)
+- [Features & Pages Overview](https://github.com/akshan-main/peakperformance#-features--pages-overview)
+- [Dataset](https://github.com/akshan-main/peakperformance#-dataset)
+- [The SportsDB Integration](https://github.com/akshan-main/peakperformance#thesportsdb-integration)
+- [Acknowledgments & References](https://github.com/akshan-main/peakperformance#-acknowledgments--references)
+- [Show Your Support!](https://github.com/akshan-main/peakperformance#-show-your-support)
 
 ---
 
