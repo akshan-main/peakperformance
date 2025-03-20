@@ -13,8 +13,9 @@ build-backend = "setuptools.build_meta"
 name = "peakperformance"
 version = "0.0.1"
 authors = [
-  { name="Melissa Winstanley" },
-  { name="David Beck" },
+  { name="Akshan Krithick" },
+  { name="Balaji Boopal" },
+  { name="Joshua Son" },
 ]
 description = "A small entropy example"
 readme = "README.md"
@@ -37,5 +38,5 @@ dependencies = {file = ["requirements.txt"]}
 
 # Where can someone find out more about your project?
 [project.urls]
-Homepage = "https://github.com/UWDATA515/ci_example"
-Issues = "https://github.com/UWDATA515/ci_example/issues"
+Homepage = "https://peakperformance.streamlit.app/the_negotiator"
+Issues = "https://github.com/akshan-main/peakperformance"
