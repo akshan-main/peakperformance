@@ -4,3 +4,5 @@ plotly
 scikit-learn
 datetime
 altair
+torch
+matplotlib
