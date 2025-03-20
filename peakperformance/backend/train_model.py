@@ -164,8 +164,8 @@ class ContractNegotiationEnvironment:
                 reward = 100 + (proposed_wage / expected_wage) * 50
                 self.done = True
                 negotiation_log.append(
-                    f"Contract Accepted at €{int(proposed_wage):,}/week for"
-                    "{contract_length} years."
+                    f"Contract Accepted at €{int(proposed_wage):,}/week for "
+                    f"{contract_length} years."
                 )
             else:
                 reward = -20

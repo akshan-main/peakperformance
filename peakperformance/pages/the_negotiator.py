@@ -125,11 +125,11 @@ def display_player_card(player_name: str, player_info: dict) -> None:
     st.markdown(
         f"""
         <div style="background: rgba(0,0,0,0.85); padding: 15px; border-radius: 10px;">
-            <h3 style="color:yellow;">📌 {player_name}</h3>
-            <p><b>🏟️ Club:</b> {player_info['club']}</p>
-            <p><b>🎯 Rating:</b> {player_info['rating']}  |  📅 Age: {player_info['age']}</p>
-            <p><b>💰 Current Wage:</b> €{int(player_info['current_wage']):,} / week</p>
-            <p><b>🛡️ Position:</b> {player_info['position']}</p>
+            <h3 style="color:yellow;"> {player_name}</h3>
+            <p><b> Club:</b> {player_info['club']}</p>
+            <p><b> Rating:</b> {player_info['rating']}  |   Age: {player_info['age']}</p>
+            <p><b> Current Wage:</b> €{int(player_info['current_wage']):,} / week</p>
+            <p><b> Position:</b> {player_info['position']}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -356,9 +356,17 @@ CLUB, RATING, AGE, CURRENT_WAGE, POSITION = (
     player_details["position"],
 )
 
-agent_wage: float = generate_agent_offer(AGE, RATING, CURRENT_WAGE)
+# Check if the selected player has changed
+if "prev_player" not in st.session_state or st.session_state.prev_player != PLAYER_NAME:
+    # Update the cached wage and record the new player
+    st.session_state.agent_wage = generate_agent_offer(AGE, RATING, CURRENT_WAGE)
+    st.session_state.prev_player = PLAYER_NAME
 
-st.sidebar.subheader("💼 Your Contract Proposal")
+# Use the wage from session state
+agent_wage = st.session_state.agent_wage
+
+
+st.sidebar.subheader("Your Contract Proposal")
 
 # Ensure session state has a default wage
 if "proposed_wage" not in st.session_state:
@@ -386,57 +394,67 @@ with col2:
                 unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;">
-            <b>Agent</b>: "{PLAYER_NAME} expects a wage of <b>€{int(agent_wage):,}</b> per week."
+        <div style="background: rgba(0,0,0,0.7); padding: 10px; font-weight:900;
+        font-size:1.5rem; border-radius: 5px;">
+            <b>Agent</b>: "{PLAYER_NAME} expects a minimum
+            wage of <b>€{int(agent_wage):,}</b> per week."
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+# Add a dropdown for selecting a negotiation action in the sidebar
+action_choice = st.sidebar.selectbox(
+    "Select Negotiation Action:",
+    ["Accept Contract", "Negotiate Higher Wage", "Change Contract Length", "Reject Offer"]
+)
+action_mapping = {
+    "Accept Contract": 0,
+    "Negotiate Higher Wage": 1,
+    "Change Contract Length": 2,
+    "Reject Offer": 3
+}
+action_index = action_mapping[action_choice]
 
 if st.sidebar.button("📜 Submit Offer"):
-    progress_bar = st.progress(0)
-    for i in range(5):
-        time.sleep(0.3)
-        progress_bar.progress((i + 1) * 20)
+    # Check for older players with too long a contract length
+    if AGE > 32 and CONTRACT_LENGTH > 3:
+        st.error("Player has rejected the offer due to an overly long contract. "
+        "Please try reducing the contract length to 3 years or less.")
+        # Optionally, update the session state if needed.
+        st.session_state.state = ENV.state
+    elif AGE < 22 and CONTRACT_LENGTH < 3:
+        st.error("Player has rejected the offer due to an extremely short contract. "
+        "Please try increasing the contract length.")
+        # Optionally, update the session state if needed.
+        st.session_state.state = ENV.state
+    else:
+        progress_bar = st.progress(0)
+        for i in range(5):
+            time.sleep(0.3)
+            progress_bar.progress((i + 1) * 20)
 
-    next_state, negotiation_reward, counteroffer, negotiation_log, done = ENV.step(
-        0, PROPOSED_WAGE, CONTRACT_LENGTH
-    )
-
-    DECISION_TEXT = ""
-    FEEDBACK_TEXT = ""
-    COLOR_CLASS = ""
-
-    if done:
-        display_newspaper_announcement(PLAYER_NAME, PROPOSED_WAGE, CONTRACT_LENGTH,
-                                       CLUB, negotiation_reward)
-        if counteroffer:
-            st.warning(counteroffer)
-        for log in negotiation_log:
-            st.info(log)
-    elif negotiation_reward == 0:  # Ensures it's not accepted or rejected
-        st.markdown(
-            """
-            <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
-                        font-size: 22px; background-color: #f39c12;">
-                <h2>💬 Needs Re-Negotiation</h2>
-                <p>Player's agent wants a better deal.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        next_state, negotiation_reward, counteroffer, negotiation_log, done = ENV.step(
+            action_index, PROPOSED_WAGE, CONTRACT_LENGTH
         )
-
-    # Display Feedback
-    st.markdown(
-        f"""
-        <div style="padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;
-                    font-size: 22px;">
-            <h2>{DECISION_TEXT}</h2>
-            <p>{FEEDBACK_TEXT}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Update session state and trigger rerun
-    st.session_state.state = next_state
+        st.session_state.state = next_state
+        if done:
+            display_newspaper_announcement(PLAYER_NAME, PROPOSED_WAGE, CONTRACT_LENGTH,
+                                           CLUB, negotiation_reward)
+            if counteroffer:
+                st.warning(counteroffer)
+            for log in negotiation_log:
+                st.info(log)
+        else:
+            st.markdown(
+                """
+                <div style="padding: 20px; border-radius: 10px;
+                text-align: center; font-weight: bold;
+                            font-size: 22px; background-color: #f39c12;">
+                    <h2>💬 Needs Re-Negotiation</h2>
+                    <p>The player's agent wants a better deal. 
+                    Adjust your proposal or choose a different action.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
