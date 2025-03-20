@@ -5,5 +5,4 @@ omit =
     */venv/*
     */tmp/*
     */_remote_module_non_scriptable.py
-    *_remote_module_non_scriptable.py
     /tmp/tmp*/_remote_module_non_scriptable.py
