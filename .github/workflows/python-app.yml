@@ -42,7 +42,6 @@ jobs:
           conda activate myenv
       - name: Unit tests
         run: |
-          python -m unittest discover -s peakperformance/tests
           coverage run -m unittest discover -s peakperformance/tests
           coverage report
           coverage lcov -o coverage.lcov
