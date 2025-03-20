@@ -1,10 +1,11 @@
 """
-Contract Simulator: FIFA-Style Player Contract Negotiation using RL.
+Football Player Profile Page
 
-This module simulates contract negotiations for football players using a reinforcement
-learning model. It loads player data, initializes an RL model, and sets up a Streamlit
-interface to display player information, contract negotiation details, and results in a
-FIFA-style layout.
+This module sets up a Streamlit page for displaying football player profiles.
+It uses data from a CSV file and APIs from TheSportsDB.
+
+Author: Balaji Boopal
+Date: March 16, 2025
 
 Global Variables:
     CSV_PATH (Path): Path to the CSV file containing player salary and rating data.
@@ -17,6 +18,7 @@ Global Variables:
 Returns:
     None
 """
+
 import sys
 import time
 import random
@@ -31,12 +33,12 @@ except ModuleNotFoundError:
     sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
     from peakperformance.backend.train_model import load_player_data, ContractNegotiationEnvironment
 
-
-
-CSV_PATH: Path = Path.cwd() / "dataset" / "Ratings Combined" / "filtered_playerratingssalaries.csv"
-
+# Global Constants
+CSV_PATH: Path = Path.cwd() / "dataset" / "Ratings Combined" / \
+    "filtered_playerratingssalaries.csv"
 PLAYER_DATA = load_player_data(CSV_PATH)
 MODEL_PATH: Path = Path.cwd() / "assets" / "rl_contract_model.pth"
+
 
 def fix_translucent_bar() -> None:
     """
@@ -104,7 +106,8 @@ def generate_agent_offer(age: int, rating: float, current_wage: float) -> float:
         return current_wage * random.uniform(1.5, 1.8)
     if age <= 30:
         return current_wage * random.uniform(1.3, 1.5)
-    decline_factor = random.uniform(0.7, 1) if rating >= 85 else random.uniform(0.7, 1.0)
+    decline_factor = random.uniform(
+        0.7, 1) if rating >= 85 else random.uniform(0.7, 1.0)
     return current_wage * decline_factor
 
 
@@ -267,6 +270,7 @@ class DQN(nn.Module):
         state_dim (int): Dimension of the input state.
         action_dim (int): Number of possible actions.
     """
+
     def __init__(self, state_dim: int, action_dim: int) -> None:
         super().__init__()
         self.fc1 = nn.Linear(state_dim, 64)
@@ -331,7 +335,8 @@ st.sidebar.image(
     "skysports-transfer-window-graphic_4385641.jpg?20180810091733",
     width=300,
 )
-PLAYER_NAME: str = st.sidebar.selectbox("Select a Player:", PLAYER_DATA["PLAYER"].unique())
+PLAYER_NAME: str = st.sidebar.selectbox(
+    "Select a Player:", PLAYER_DATA["PLAYER"].unique())
 
 # Initialize environment AFTER player selection
 if "env" not in st.session_state:
@@ -377,7 +382,8 @@ with col1:
     display_player_card(PLAYER_NAME, player_details)
 
 with col2:
-    st.markdown("<h2 style='color:yellow;'>📜 Contract Negotiation</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:yellow;'>📜 Contract Negotiation</h2>",
+                unsafe_allow_html=True)
     st.markdown(
         f"""
         <div style="background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;">
@@ -434,3 +440,8 @@ if st.sidebar.button("📜 Submit Offer"):
 
     # Update session state and trigger rerun
     st.session_state.state = next_state
+
+
+if __name__ == "__main__":
+    set_theme()
+    main()
