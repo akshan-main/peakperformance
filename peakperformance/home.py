@@ -24,7 +24,6 @@ import streamlit as st
 
 st.set_page_config(page_title="FIFA 15 Style Homepage", layout="wide")
 
-
 def get_base64(bin_file):
     """
     Encode a binary file into Base64 format.
@@ -39,7 +38,15 @@ def get_base64(bin_file):
         return base64.b64encode(file.read()).decode()
 
 def get_abs_path(relative_path):
-    """Correctly resolves asset paths locally and on deployment."""
+    """
+    Resolve the absolute path of an asset file.
+
+    Args:
+        relative_path (str): The relative path of the asset file.
+
+    Returns:
+        str | None: The absolute path of the asset if found, otherwise None.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     possible_paths = [
         os.path.join(current_dir, '..', 'assets', relative_path),

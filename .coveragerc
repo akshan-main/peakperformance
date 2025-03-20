@@ -1,0 +1,5 @@
+[run]
+source = peakperformance
+omit = 
+    */_remote_module_non_scriptable.py
+    /tmp/tmp*/_remote_module_non_scriptable.py
