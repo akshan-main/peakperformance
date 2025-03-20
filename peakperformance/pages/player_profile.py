@@ -1,16 +1,11 @@
 """
-Football Player Profile Page.
+Football Player Profile Page
 
 This module sets up a Streamlit page for displaying football player profiles.
 It uses data from a CSV file and APIs from TheSportsDB.
 
-Global Variables:
-    CSV_PATH (Path): The path to the CSV file containing player data.
-    API_KEY (str): The API key used to access TheSportsDB API.
-    PLAYER_API_URL (str): The URL for the player search API.
-
-Returns:
-    None
+Author: Balaji Boopal
+Date: March 16, 2025
 """
 
 import io
@@ -23,14 +18,14 @@ import pandas as pd
 import numpy as np
 
 # Global Constants
-CSV_PATH = (
+CSV_PATH: Path = (
     Path(__file__).resolve().parent.parent.parent
     / "dataset"
     / "Ratings Combined"
     / "player_data_with_predictions.csv"
 )
-API_KEY = "3"  # Free API key from TheSportsDB
-PLAYER_API_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/searchplayers.php"
+API_KEY: str = "3"  # Free API key from TheSportsDB
+PLAYER_API_URL: str = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/searchplayers.php"
 
 
 def set_theme() -> None:
@@ -84,7 +79,7 @@ def load_player_data(file_path: str) -> pd.DataFrame:
     """
     Loads player data from a CSV file.
 
-    Parameters:
+    Args:
         file_path (str): The path to the CSV file containing player data.
 
     Returns:
@@ -102,7 +97,7 @@ def fetch_player_data(player_name: str) -> dict:
     """
     Fetches player data from TheSportsDB API.
 
-    Parameters:
+    Args:
         player_name (str): The name of the player to search for.
 
     Returns:
@@ -126,7 +121,7 @@ def display_player_header(player_data: dict) -> None:
     """
     Displays the player header including photo, name, and team name.
 
-    Parameters:
+    Args:
         player_data (dict): A dictionary containing the player's data.
 
     Returns:
@@ -140,8 +135,7 @@ def display_player_header(player_data: dict) -> None:
         f"""
         <div class='player-card'>
             <div class='player-header'>
-                <img src='{photo_url}' class='player-photo' style="width: 300px; 
-                height: auto; border-radius: 10px;">
+                <img src='{photo_url}' class='player-photo' style="width: 300px; height: auto; border-radius: 10px;">
                 <div>
                     <h2>{player_name}</h2>
                     <p><strong>{team_name}</strong></p>
@@ -157,7 +151,7 @@ def display_player_info(player_data: dict) -> None:
     """
     Displays the player's nationality and position information.
 
-    Parameters:
+    Args:
         player_data (dict): A dictionary containing the player's data.
 
     Returns:
@@ -175,7 +169,7 @@ def get_rating_trend(player_name: str, df: pd.DataFrame) -> pd.DataFrame:
     """
     Fetches the rating trend for a given player from the DataFrame.
 
-    Parameters:
+    Args:
         player_name (str): The name of the player.
         df (pd.DataFrame): The DataFrame containing player ratings data.
 
@@ -193,7 +187,7 @@ def plot_rating_trend(player_name: str, df: pd.DataFrame) -> io.BytesIO:
     """
     Plots the rating trend for a player with separate colors for actual and predicted ratings.
 
-    Parameters:
+    Args:
         player_name (str): The name of the player.
         df (pd.DataFrame): The DataFrame containing player ratings data.
 
@@ -261,7 +255,7 @@ def get_latest_season_stats(player_name: str, df: pd.DataFrame) -> dict:
     """
     Fetches the latest season statistics for a player from the DataFrame.
 
-    Parameters:
+    Args:
         player_name (str): The name of the player.
         df (pd.DataFrame): The DataFrame containing player statistics.
 
@@ -328,13 +322,15 @@ def main() -> None:
             if not current_season_data.empty:
                 latest_data = current_season_data.iloc[0]
                 col1, col2, col3, col4 = st.columns(4)
-                col1.metric("Matches Played", latest_data.get("Matches Played", "N/A"))
+                col1.metric("Matches Played", latest_data.get(
+                    "Matches Played", "N/A"))
                 col2.metric("Goals", latest_data.get("Goals", "N/A"))
                 col3.metric("Assists", latest_data.get("Assists", "N/A"))
                 col4.metric("Current Rating", latest_data.get("Rating", "N/A"))
                 col5, col6 = st.columns(2)
                 col5.metric("Age", latest_data.get("age", "N/A"))
-                col6.metric("Expected Goals", latest_data.get("Expected Goals", "N/A"))
+                col6.metric("Expected Goals", latest_data.get(
+                    "Expected Goals", "N/A"))
             else:
                 col1, col2 = st.columns(2)
                 col1.metric("Matches Played", "N/A")
@@ -344,7 +340,8 @@ def main() -> None:
             if stats:
                 rating_plot = plot_rating_trend(selected_player, df)
                 if rating_plot:
-                    st.image(rating_plot, caption=f"{selected_player} - Rating Trend")
+                    st.image(
+                        rating_plot, caption=f"{selected_player} - Rating Trend")
             else:
                 st.error("❌ No stats available for this player.")
         else:
