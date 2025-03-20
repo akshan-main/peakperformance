@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-load_dotenv()
 
 # Global Constants
 CSV_PATH: Path = (
