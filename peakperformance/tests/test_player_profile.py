@@ -343,7 +343,9 @@ class TestPlayerProfile(unittest.TestCase):
 
                 with patch("peakperformance.pages.player_profile.st.container") as mock_container, \
                         patch("peakperformance.pages.player_profile.st.error") as mock_error, \
-                        patch("peakperformance.pages.player_profile.st.markdown") as mock_markdown, \
+                    patch(
+                    "peakperformance.pages.player_profile.st.markdown"
+                ) as mock_markdown, \
                         patch("peakperformance.pages.player_profile.st.image") as mock_image:
 
                     # Simulate container context manager behavior.
