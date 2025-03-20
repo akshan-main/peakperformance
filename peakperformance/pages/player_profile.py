@@ -252,7 +252,7 @@ def plot_rating_trend(player_name: str, df: pd.DataFrame) -> io.BytesIO:
     ax.tick_params(axis='y', labelsize=12, colors='white')  # Change tick label color to white
     ax.set_xlabel("Season", fontsize=14, color='white')  # Change x-axis label color to white
     ax.set_ylabel("Player Rating", fontsize=14, color='white')  # Change y-axis label color to white
-    ax.set_title(f"Player Rating Trend: {player_name}", fontsize=16, color='white')  # Change title color to white
+    ax.set_title(f"Player Rating Trend: {player_name}", fontsize=16, color='white')
     ax.legend(fontsize=12, facecolor='#37444D', edgecolor='white')  # Legend background and border
 
     # Change the background colors
@@ -264,7 +264,7 @@ def plot_rating_trend(player_name: str, df: pd.DataFrame) -> io.BytesIO:
 
     # Save the plot to a buffer
     img_buffer = io.BytesIO()
-    plt.savefig(img_buffer, format="png", bbox_inches="tight", facecolor='#37444D')  # Ensure consistent background in saved image
+    plt.savefig(img_buffer, format="png", bbox_inches="tight", facecolor='#37444D')
     plt.close()
     img_buffer.seek(0)
     return img_buffer
