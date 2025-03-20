@@ -30,41 +30,45 @@ PLAYER_API_URL: str = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/search
 
 def set_theme() -> None:
     """
-    Sets the theme for the Streamlit page to ensure all text is black,
-    the background is white, and content is centered.
-
+    Sets the theme for the Streamlit page.
+    - Main page: dark grey gradient background.
+    - Sidebar: darker background with near-white text.
+    - Main text: near-white for readability.
+    - Centers the content.
+    
     Returns:
         None
     """
     st.markdown(
         """
         <style>
-            /* Make entire page background white */
+            /* Main page background: dark grey gradient */
             .stApp {
-                background-color: white !important;
+                background: #15202B !important;
                 display: flex;
                 justify-content: center;
                 align-items: center;
             }
-
-            /* Center main content and reduce width */
+            
+            /* Center main content and set width */
             .main-container {
                 max-width: 75% !important;
                 margin: auto;
                 padding-top: 20px;
             }
-
-            /* Force all text to be black */
-            * {
-                color: black !important;
-                background-color: white !important;
+            
+            /* Set default text color to near-white for readability */
+            html, body, [class*="css"] {
+                color: #EEE !important;
             }
-
-            /* Ensure sidebar is smaller */
+            
+            /* Sidebar styling: dark background with near-white text */
             section[data-testid="stSidebar"] {
+                background-color: #37444D !important;
                 width: 18% !important;
+                color: #EEE !important;
             }
-
+            
             /* Center text and tables */
             .stMarkdown, .stText, .stDataFrame, .stMetric {
                 text-align: center !important;
@@ -200,26 +204,32 @@ def plot_rating_trend(player_name: str, df: pd.DataFrame) -> io.BytesIO:
     if player_data.empty:
         return None
 
-    plt.figure(figsize=(10, 5))
+    # Create a figure and set its size
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Sort player data by season
     player_data = player_data.sort_values("season")
 
+    # Separate actual and predicted ratings
     actual_ratings = player_data.dropna(subset=["Rating"])
     predicted_ratings = player_data.dropna(subset=["predicted_rating"])
 
+    # Plot actual ratings if available
     if not actual_ratings.empty:
-        plt.plot(
+        ax.plot(
             actual_ratings["season"],
             actual_ratings["Rating"],
             marker="o",
             linestyle="-",
-            color="blue",
+            color="white",
             label="Actual Rating",
             markersize=8,
             linewidth=2,
         )
 
+    # Plot predicted ratings if available
     if not predicted_ratings.empty:
-        plt.plot(
+        ax.plot(
             predicted_ratings["season"],
             predicted_ratings["predicted_rating"],
             marker="o",
@@ -230,23 +240,31 @@ def plot_rating_trend(player_name: str, df: pd.DataFrame) -> io.BytesIO:
             linewidth=2,
         )
 
-    plt.xticks(
+    # Customize plot ticks and labels
+    ax.set_xticks(
         np.arange(
             int(player_data["season"].min()),
             int(player_data["season"].max()) + 2,
             1,
-        ),
-        fontsize=12,
+        )
     )
-    plt.yticks(fontsize=12)
-    plt.xlabel("Season", fontsize=14)
-    plt.ylabel("Player Rating", fontsize=14)
-    plt.title(f"Player Rating Trend: {player_name}", fontsize=16)
-    plt.legend(fontsize=12)
-    plt.grid(True, linestyle="--", alpha=0.6)
+    ax.tick_params(axis='x', labelsize=12, colors='white')  # Change tick label color to white
+    ax.tick_params(axis='y', labelsize=12, colors='white')  # Change tick label color to white
+    ax.set_xlabel("Season", fontsize=14, color='white')  # Change x-axis label color to white
+    ax.set_ylabel("Player Rating", fontsize=14, color='white')  # Change y-axis label color to white
+    ax.set_title(f"Player Rating Trend: {player_name}", fontsize=16, color='white')  # Change title color to white
+    ax.legend(fontsize=12, facecolor='#37444D', edgecolor='white')  # Legend background and border
 
+    # Change the background colors
+    ax.set_facecolor('#37444D')  # Set plot area background to #37444D
+    fig.patch.set_facecolor('#37444D')  # Set figure background to #37444D
+
+    # Add gridlines with a custom style for better visibility
+    ax.grid(True, linestyle="--", alpha=0.6, color='white')  # Gridlines in white
+
+    # Save the plot to a buffer
     img_buffer = io.BytesIO()
-    plt.savefig(img_buffer, format="png", bbox_inches="tight")
+    plt.savefig(img_buffer, format="png", bbox_inches="tight", facecolor='#37444D')  # Ensure consistent background in saved image
     plt.close()
     img_buffer.seek(0)
     return img_buffer
