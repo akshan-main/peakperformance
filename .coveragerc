@@ -1,0 +1,9 @@
+[run]
+source = peakperformance
+omit = 
+    */site-packages/*
+    */venv/*
+    */tmp/*
+    */_remote_module_non_scriptable.py
+    *_remote_module_non_scriptable.py
+    /tmp/tmp*/_remote_module_non_scriptable.py
