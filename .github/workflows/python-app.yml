@@ -41,31 +41,29 @@ jobs:
           conda install --yes coverage pylint
           conda activate myenv
 
-      - name: Suppress Streamlit Warnings
-        run: |
-          echo "🛠️ Disabling Streamlit MemoryCache Warnings..."
-          export STREAMLIT_BROWSER_GITHUB_ACTIONS="true"
-
-      - name: Debug Temporary Files Before Tests
+      # 📌 Debug: Show /tmp contents before running tests
+      - name: Check /tmp before tests
         run: |
           echo "📌 Checking /tmp directory before tests..."
-          ls -lah /tmp/
+          ls -lah /tmp/ || echo "⚠️ /tmp directory is empty"
 
-      - name: Unit Tests with Temporary File Debugging
+      - name: Run Unit Tests with Debugging
         run: |
-          python -m unittest discover -s peakperformance/tests || echo "✅ Tests completed with warnings."
+          python -m unittest discover -s peakperformance/tests
           coverage run -m unittest discover -s peakperformance/tests
           coverage report
-          ls -lah /tmp/  # Check if temp files were deleted
 
-      - name: Ensure LCOV File Exists
+      # 📌 Preserve /tmp files after tests to prevent early deletion
+      - name: Preserve Temp Files
         run: |
-          ls -lah
-          if [ ! -f coverage.lcov ]; then
-            echo "⚠️ LCOV file not found. Attempting to regenerate..."
-            coverage lcov -o coverage.lcov || echo "⚠️ LCOV generation failed."
-          fi
-          cat coverage.lcov | head -n 20
+          mkdir -p ./temp_backup
+          cp -r /tmp/* ./temp_backup/ || echo "⚠️ No temp files found in /tmp"
+
+      # 📌 Debug: Show /tmp contents after tests
+      - name: Debug Temp Files
+        run: |
+          echo "📌 Checking /tmp directory after tests..."
+          ls -lah ./temp_backup/ || echo "⚠️ No temp files were saved."
 
       - name: Report code coverage to Coveralls
         uses: coverallsapp/github-action@v2
@@ -77,7 +75,7 @@ jobs:
 
       - name: Lint with pylint
         run: |
-          pylint $(git ls-files '*.py')  # Run only on tracked Python files
+          pylint peakperformance/**/*.py
 
   finish:
     needs: build_test
