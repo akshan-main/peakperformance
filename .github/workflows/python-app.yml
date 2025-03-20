@@ -45,6 +45,7 @@ jobs:
           coverage run --rcfile=.coveragerc -m unittest discover -s peakperformance/tests
           coverage report
           coverage lcov -o coverage.lcov
+          
       - name: Debug LCOV File
         run: |
           ls -lah
@@ -60,7 +61,7 @@ jobs:
           
       - name: Lint with pylint
         run: |
-          pylint peakperformance/*/.py
+          pylint peakperformance/**/.py
   finish:
     needs: build_test
     if: ${{ always() }}
