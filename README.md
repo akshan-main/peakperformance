@@ -180,6 +180,16 @@ For the below mentioned datasets, we used player data from 2017/18 season to 202
 <br>
 [Capology website](https://www.capology.com/) - Player yearly and weekly salary data
 
+# TheSportsDB Integration
+
+Our project uses **TheSportsDB** to retrieve basic football player information such as photos, nationality, and position. This data is then displayed on our **Player Profile** page.
+
+## Why TheSportsDB?
+
+- **Free & Public**: It offers a free, public API key (`API_KEY = "3"`) that doesn’t require secrecy.
+- **Rich Data**: Provides an array of data points (e.g. `strPlayer`, `strTeam`, `strNationality`) without additional overhead.
+- **Simple Integration**: Straightforward to call via HTTP requests.
+
 ---
 
 ## 📅 Acknowledgments & References
