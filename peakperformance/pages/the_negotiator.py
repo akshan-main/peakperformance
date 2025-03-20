@@ -125,11 +125,11 @@ def display_player_card(player_name: str, player_info: dict) -> None:
     st.markdown(
         f"""
         <div style="background: rgba(0,0,0,0.85); padding: 15px; border-radius: 10px;">
-            <h3 style="color:yellow;">📌 {player_name}</h3>
-            <p><b>🏟️ Club:</b> {player_info['club']}</p>
-            <p><b>🎯 Rating:</b> {player_info['rating']}  |  📅 Age: {player_info['age']}</p>
-            <p><b>💰 Current Wage:</b> €{int(player_info['current_wage']):,} / week</p>
-            <p><b>🛡️ Position:</b> {player_info['position']}</p>
+            <h3 style="color:yellow;"> {player_name}</h3>
+            <p><b> Club:</b> {player_info['club']}</p>
+            <p><b> Rating:</b> {player_info['rating']}  |   Age: {player_info['age']}</p>
+            <p><b> Current Wage:</b> €{int(player_info['current_wage']):,} / week</p>
+            <p><b> Position:</b> {player_info['position']}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -366,7 +366,7 @@ if "prev_player" not in st.session_state or st.session_state.prev_player != PLAY
 agent_wage = st.session_state.agent_wage
 
 
-st.sidebar.subheader("💼 Your Contract Proposal")
+st.sidebar.subheader("Your Contract Proposal")
 
 # Ensure session state has a default wage
 if "proposed_wage" not in st.session_state:
