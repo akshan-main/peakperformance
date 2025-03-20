@@ -68,7 +68,8 @@ jobs:
 
       - name: Lint with pylint
         run: |
-          pylint $(git ls-files '*.py')  # Run only on tracked Python files
+          pylint peakperformance/**/*.py
+          pylint peakperformance/home.py
 
   finish:
     needs: build_test
